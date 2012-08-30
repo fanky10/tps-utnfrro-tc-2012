@@ -1,0 +1,2 @@
+ant javadoc
+pause
