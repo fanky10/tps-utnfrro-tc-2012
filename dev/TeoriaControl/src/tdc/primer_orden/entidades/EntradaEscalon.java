@@ -16,6 +16,7 @@ import java.util.ArrayList;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
@@ -90,14 +91,23 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "1tau");
+        XYSeries reto = new XYSeries(di.getLabel() + "1Tau");
         double value = getfdet(di, di.getTau());
         reto.add(0, value);
         reto.add(di.getTau(), value);
         reto.add(di.getTau(), 0);
         return reto;
     }
+    
 
+    private XYSeries getAmplitud(DataInput di) {
+        XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
+        Number numberTau = DataInput.N_TAU * maxTau;
+        reto.add(0, di.getAmplitud());
+        reto.add(numberTau, di.getAmplitud());
+        return reto;
+    }
+    
     //</editor-fold>
     @Override
     protected void createDataset() {
@@ -114,14 +124,6 @@ public class EntradaEscalon extends FuncionTransferencia {
             }
         }
 
-    }
-
-    private XYSeries getAmplitud(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "Cte Tiempo");
-        Number numberTau = 5 * maxTau;
-        reto.add(0, di.getAmplitud());
-        reto.add(numberTau, di.getAmplitud());
-        return reto;
     }
 
     protected void createChart() {
@@ -146,9 +148,13 @@ public class EntradaEscalon extends FuncionTransferencia {
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
         timeAxis.setRange(0.0, 5 * maxTau);
-        plot.setDomainAxis(timeAxis);
-        //
-//        plot.setRangeAxis(new NumberAxis("Y(t)"));
+        timeAxis.setTickUnit(new NumberTickUnit(1));
+        
+        final NumberAxis functionAxis = new NumberAxis("y(t)");
+        functionAxis.setInverted(false);
+//        functionAxis.setRange(0.0, 5 * maxTau);//automatic
+        functionAxis.setTickUnit(new NumberTickUnit(1));
+        plot.setRangeAxis(functionAxis);
 
 
     }
