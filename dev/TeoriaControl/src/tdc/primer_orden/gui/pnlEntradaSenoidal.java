@@ -8,7 +8,6 @@
  *
  * Created on 26-abr-2011, 18:31:33
  */
-
 package tdc.primer_orden.gui;
 
 import java.awt.BorderLayout;
@@ -23,15 +22,18 @@ import tdc.primer_orden.entidades.EntradaSenoidal;
  *
  * @author fanky
  */
-public class pnlEntradaSenoidal  extends JPanel{
+public class pnlEntradaSenoidal extends JPanel {
+
     private CustomChartPanel cPanel;
     private EntradaSenoidal entrada;
+
     /** Creates new form pnlEscalon */
     public pnlEntradaSenoidal() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso","Tiempo","Y(t)"));
-        pnlGrafico.add(cPanel,BorderLayout.CENTER);
+        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso", "Tiempo", "Y(t)"));
+        pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
+
     /**
      * 0.1 ver si actualiza el panel
      * 0.2 generar chart y actualizar el panel
@@ -41,19 +43,21 @@ public class pnlEntradaSenoidal  extends JPanel{
         diag.setVisible(true);
         diag.dispose();
         DataInputCatalog data_cat = diag.getDatosIngresados();
-        EntradaSenoidal.DEBUG=true;
+        EntradaSenoidal.DEBUG = true;
         entrada = new EntradaSenoidal(data_cat);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
-    protected void ver_tabla(){
-        if(entrada == null){
+
+    protected void ver_tabla() {
+        if (entrada == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Primero debe ingresar datos validos");
         }
-        new frmTable(null, true,"Relacion entre Tau y Phi", entrada).setVisible(true);
+        new frmTable(null, true, "Relacion entre Tau y Phi", entrada).setVisible(true);
     }
+
     @Override
     public String toString() {
-        return "EntradaSenoidal";
+        return "Entrada Senoidal";
     }
 
     /** This method is called from within the constructor to
@@ -120,14 +124,10 @@ public class pnlEntradaSenoidal  extends JPanel{
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ver_tabla();
 }//GEN-LAST:event_jButton2ActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel pnlGrafico;
     // End of variables declaration//GEN-END:variables
-
-
 }

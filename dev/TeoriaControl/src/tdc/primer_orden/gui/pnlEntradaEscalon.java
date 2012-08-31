@@ -36,15 +36,7 @@ public class pnlEntradaEscalon extends JPanel {
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 
-    /**
-     * 0.1 ver si actualiza el panel
-     * 0.2 generar chart y actualizar el panel
-     */
     protected void ingresar_datos() {
-        //v0.1
-//        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
-//        cPanel.setModel(new DefaultChartModel(message,"x","y"));
-        //v0.2
         diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
         diag.setVisible(true);
         diag.dispose();
@@ -63,7 +55,7 @@ public class pnlEntradaEscalon extends JPanel {
 
     @Override
     public String toString() {
-        return "EntradaEscalon";
+        return "Entrada Escalon";
     }
 
     /** This method is called from within the constructor to

@@ -8,35 +8,32 @@
  *
  * Created on 25-abr-2011, 22:56:39
  */
-
 package tdc.primer_orden.gui;
 
 import java.awt.BorderLayout;
-import javax.swing.JFrame;
 import javax.swing.JPanel;
-import tdc.Configuracion;
 import tdc.entidades.DataInputCatalog;
 import tdc.gui.entidades.CustomChartPanel;
 import tdc.gui.entidades.DefaultChartModel;
 import tdc.gui.frmTable;
-import tdc.primer_orden.entidades.EntradaEscalon;
 import tdc.primer_orden.entidades.EntradaImpulso;
-
 
 /**
  *
  * @author facundo
  */
-public class pnlEntradaImpulso extends JPanel{
+public class pnlEntradaImpulso extends JPanel {
+
     private CustomChartPanel cPanel;
     private EntradaImpulso entrada;
+
     /** Creates new form pnlEscalon */
     public pnlEntradaImpulso() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso","Tiempo","Y(t)"));
-        pnlGrafico.add(cPanel,BorderLayout.CENTER);
+        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso", "Tiempo", "Y(t)"));
+        pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
-    
+
     /**
      * 0.1 ver si actualiza el panel
      * 0.2 generar chart y actualizar el panel
@@ -46,26 +43,25 @@ public class pnlEntradaImpulso extends JPanel{
 //        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
 //        cPanel.setModel(new DefaultChartModel(message,"x","y"));
         //v0.2
-        diagIngresoDatos diag = new diagIngresoDatos(null, true,diagIngresoDatos.ENTRADA_ESCALON);
+        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
         diag.setVisible(true);
         diag.dispose();
         DataInputCatalog data_cat = diag.getDatosIngresados();
         entrada = new EntradaImpulso(data_cat);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
-    protected void ver_tabla(){
-        if(entrada == null){
+
+    protected void ver_tabla() {
+        if (entrada == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Primero debe ingresar datos validos");
         }
-        new frmTable(null, true,"Tiempos Asentamiento / Subida",entrada).setVisible(true);
-    }
-    
-    
-    @Override
-    public String toString() {
-        return "EntradaImpulso";
+        new frmTable(null, true, "Tiempos Asentamiento / Subida", entrada).setVisible(true);
     }
 
+    @Override
+    public String toString() {
+        return "Entrada Impulso";
+    }
 
     /** This method is called from within the constructor to
      * initialize the form.
@@ -129,13 +125,10 @@ public class pnlEntradaImpulso extends JPanel{
     private void jButton4ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton4ActionPerformed
         ver_tabla();
 }//GEN-LAST:event_jButton4ActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton3;
     private javax.swing.JButton jButton4;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel pnlGrafico;
     // End of variables declaration//GEN-END:variables
-
 }
