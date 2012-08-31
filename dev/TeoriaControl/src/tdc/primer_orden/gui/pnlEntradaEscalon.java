@@ -8,7 +8,6 @@
  *
  * Created on 13-abr-2011, 20:32:57
  */
-
 package tdc.primer_orden.gui;
 
 import java.awt.BorderLayout;
@@ -21,22 +20,22 @@ import tdc.gui.entidades.DefaultChartModel;
 import tdc.gui.frmTable;
 import tdc.primer_orden.entidades.EntradaEscalon;
 
-
 /**
  *
  * @author facundo
  */
-public class pnlEntradaEscalon extends JPanel{
-    
+public class pnlEntradaEscalon extends JPanel {
+
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
+
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Escalon","Tiempo","Y(t)"));
-        pnlGrafico.add(cPanel,BorderLayout.CENTER);
+        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Escalon", "Tiempo", "Y(t)"));
+        pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
-    
+
     /**
      * 0.1 ver si actualiza el panel
      * 0.2 generar chart y actualizar el panel
@@ -46,26 +45,27 @@ public class pnlEntradaEscalon extends JPanel{
 //        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
 //        cPanel.setModel(new DefaultChartModel(message,"x","y"));
         //v0.2
-        diagIngresoDatos diag = new diagIngresoDatos(null, true,diagIngresoDatos.ENTRADA_ESCALON);
+        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
         diag.setVisible(true);
         diag.dispose();
         DataInputCatalog data_cat = diag.getDatosIngresados();
         entrada = new EntradaEscalon(data_cat);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
-    protected void ver_tabla(){
-        if(entrada == null){
+
+    protected void ver_tabla() {
+        if (entrada == null) {
             javax.swing.JOptionPane.showMessageDialog(this, "Primero debe ingresar datos validos");
+        } else {
+            new frmTable(null, true, "Tiempos Asentamiento / Subida", entrada).setVisible(true);
         }
-        new frmTable(null, true,"Tiempos Asentamiento / Subida",entrada).setVisible(true);
     }
-    
-    
+
     @Override
     public String toString() {
         return "EntradaEscalon";
     }
-    
+
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is
@@ -129,8 +129,6 @@ public class pnlEntradaEscalon extends JPanel{
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ver_tabla();
     }//GEN-LAST:event_jButton2ActionPerformed
-
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
@@ -139,8 +137,8 @@ public class pnlEntradaEscalon extends JPanel{
     private javax.swing.JPanel pnlGrafico;
     // End of variables declaration//GEN-END:variables
 
-    public static void main(String args[]){
-        JFrame frmMain = new JFrame("TeoriaDeControl "+Configuracion.getVersion());
+    public static void main(String args[]) {
+        JFrame frmMain = new JFrame("TeoriaDeControl " + Configuracion.getVersion());
         frmMain.getContentPane().add(new pnlEntradaEscalon());
         frmMain.setLocationRelativeTo(null);
         frmMain.pack();
