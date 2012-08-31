@@ -33,14 +33,19 @@ import tdc.gui.entidades.MyColorCellRenderer;
 public class EntradaEscalon extends FuncionTransferencia {
 
     private Double maxTau = 0D;
+    private Boolean dibujarAmplitud = true;
 
-    public EntradaEscalon(DataInputCatalog input) {
+    public EntradaEscalon(DataInputCatalog input, Boolean dibujarAmplitud) {
         super(input);
+        this.dibujarAmplitud = dibujarAmplitud;
         init();
     }
 
-    private void init() {
+    public EntradaEscalon(DataInputCatalog input) {
+        this(input, true);
+    }
 
+    private void init() {
         for (DataInput di : input_catalog) {
             if (maxTau < di.getTau()) {
                 maxTau = di.getTau();
@@ -103,8 +108,20 @@ public class EntradaEscalon extends FuncionTransferencia {
             colores.add(di.getColor());
             data.addSeries(getCteTiempo(di));
             colores.add(Color.black);
+            if (dibujarAmplitud) {
+                data.addSeries(getAmplitud(di));
+                colores.add(Color.black);
+            }
         }
 
+    }
+
+    private XYSeries getAmplitud(DataInput di) {
+        XYSeries reto = new XYSeries(di.getLabel() + "Cte Tiempo");
+        Number numberTau = 5 * maxTau;
+        reto.add(0, di.getAmplitud());
+        reto.add(numberTau, di.getAmplitud());
+        return reto;
     }
 
     protected void createChart() {
@@ -132,17 +149,16 @@ public class EntradaEscalon extends FuncionTransferencia {
         plot.setDomainAxis(timeAxis);
         //
 //        plot.setRangeAxis(new NumberAxis("Y(t)"));
-        
+
 
     }
-    //TODO: change this, generate different table data.
 
+    //TODO: change this, generate different table data.
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida Grafica", "Tiempo Subida Algebraico (2.2*Tau)"}, 0);
+        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
         for (DataInput di : input_catalog) {
             tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getTiempoSubida(di)),
                         Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di))
                     });
         }

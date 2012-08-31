@@ -28,7 +28,7 @@ public class pnlEntradaEscalon extends JPanel {
 
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
-
+    private DataInputCatalog data_cat;
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
@@ -40,8 +40,14 @@ public class pnlEntradaEscalon extends JPanel {
         diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
         diag.setVisible(true);
         diag.dispose();
-        DataInputCatalog data_cat = diag.getDatosIngresados();
-        entrada = new EntradaEscalon(data_cat);
+        data_cat = diag.getDatosIngresados();
+        refreshDatos();
+    }
+    private void refreshDatos(){
+        if(data_cat==null){
+            ingresar_datos();
+        }
+        entrada = new EntradaEscalon(data_cat,chkVerAmplitud.isSelected());
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
 
@@ -72,6 +78,7 @@ public class pnlEntradaEscalon extends JPanel {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
+        chkVerAmplitud = new javax.swing.JCheckBox();
 
         pnlGrafico.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         pnlGrafico.setLayout(new java.awt.BorderLayout());
@@ -92,6 +99,15 @@ public class pnlEntradaEscalon extends JPanel {
         });
         jPanel1.add(jButton2);
 
+        chkVerAmplitud.setSelected(true);
+        chkVerAmplitud.setText("Ver Amplitud");
+        chkVerAmplitud.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                chkVerAmplitudActionPerformed(evt);
+            }
+        });
+        jPanel1.add(chkVerAmplitud);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
         layout.setHorizontalGroup(
@@ -106,7 +122,7 @@ public class pnlEntradaEscalon extends JPanel {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addGap(11, 11, 11)
+                .addGap(20, 20, 20)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(pnlGrafico, javax.swing.GroupLayout.DEFAULT_SIZE, 592, Short.MAX_VALUE)
@@ -121,8 +137,14 @@ public class pnlEntradaEscalon extends JPanel {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ver_tabla();
     }//GEN-LAST:event_jButton2ActionPerformed
+
+    private void chkVerAmplitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkVerAmplitudActionPerformed
+        refreshDatos();
+    }//GEN-LAST:event_chkVerAmplitudActionPerformed
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JCheckBox chkVerAmplitud;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
