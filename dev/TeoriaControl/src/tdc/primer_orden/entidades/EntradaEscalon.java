@@ -24,6 +24,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
+import tdc.util.ApplicationConstants;
 
 /**
  *
@@ -89,9 +90,9 @@ public class EntradaEscalon extends FuncionTransferencia {
         }
         return reto;
     }
-
+    
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "1Tau");
+        XYSeries reto = new XYSeries(di.getLabel() + "1"+ ApplicationConstants.UNICODE_TAU);
         double value = getfdet(di, di.getTau());
         reto.add(0, value);
         reto.add(di.getTau(), value);
@@ -165,10 +166,14 @@ public class EntradaEscalon extends FuncionTransferencia {
         DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
         for (DataInput di : input_catalog) {
             tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di))
+                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
+                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
                     });
         }
         return tmodel;
+    }
+    private Double getTiempoAsentamiento(DataInput di){
+        return DataInput.N_TAU * di.getTau();
     }
 
     @Override
