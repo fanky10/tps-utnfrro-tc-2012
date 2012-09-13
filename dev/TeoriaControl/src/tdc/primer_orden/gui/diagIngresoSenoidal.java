@@ -35,25 +35,14 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         Utilidades.setDouble(txtValorBase,100);
         Utilidades.setDouble(txtAmplitud, 2);
         Utilidades.setDouble(txtFrecuencia,3.18);
-        actualiza_omega();
     }
     public DataInputCatalog getDatosIngresados(){
         DataInputCatalog data = new DataInputCatalog();
-        data.add(new DataInput("Datos1", Utilidades.getDouble(txtAmplitud), Utilidades.getDouble(txtCteTiempo), Utilidades.getDouble(txtValorBase), Utilidades.getDouble(txtFrecuencia),Utilidades.getDouble(txtOmega),Color.red));
+        data.add(new DataInput("Datos1", Utilidades.getDouble(txtAmplitud), Utilidades.getDouble(txtCteTiempo), Utilidades.getDouble(txtValorBase), Utilidades.getDouble(txtFrecuencia),Color.red));
         Collections.sort(data,data);
         return data;
     }
     
-    private void actualiza_omega() {
-        double frecuencia = Utilidades.getDouble(txtFrecuencia);
-        double omega = Math.round(2*Math.PI*frecuencia);
-        Utilidades.setDouble(txtOmega,omega);
-    }
-    private void actualiza_frecuencia() {
-        double omega = Utilidades.getDouble(txtFrecuencia);//Math.round(2*Math.PI*frecuencia);
-        double frecuencia = Math.round(omega/2*Math.PI);
-        Utilidades.setDouble(txtFrecuencia,frecuencia);
-    }
     
     /** This method is called from within the constructor to
      * initialize the form.
@@ -72,8 +61,6 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         txtAmplitud = new javax.swing.JTextField();
         jLabel4 = new javax.swing.JLabel();
         txtFrecuencia = new javax.swing.JTextField();
-        jLabel6 = new javax.swing.JLabel();
-        txtOmega = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         txtCteTiempo = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
@@ -120,21 +107,6 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         });
         jPanel1.add(txtFrecuencia);
 
-        jLabel6.setText("Omega");
-        jPanel1.add(jLabel6);
-
-        txtOmega.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                txtOmegaFocusGained(evt);
-            }
-        });
-        txtOmega.addKeyListener(new java.awt.event.KeyAdapter() {
-            public void keyReleased(java.awt.event.KeyEvent evt) {
-                txtOmegaKeyReleased(evt);
-            }
-        });
-        jPanel1.add(txtOmega);
-
         jLabel5.setText("Cte Tiempo");
         jPanel1.add(jLabel5);
 
@@ -168,13 +140,12 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
-                .addContainerGap()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addComponent(jLabel1, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(jPanel2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -201,16 +172,8 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
     }//GEN-LAST:event_txtCteTiempoFocusGained
 
     private void txtFrecuenciaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtFrecuenciaKeyReleased
-        actualiza_omega();
+        
     }//GEN-LAST:event_txtFrecuenciaKeyReleased
-
-    private void txtOmegaFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_txtOmegaFocusGained
-        txtOmega.selectAll();
-    }//GEN-LAST:event_txtOmegaFocusGained
-
-    private void txtOmegaKeyReleased(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtOmegaKeyReleased
-        actualiza_frecuencia();
-    }//GEN-LAST:event_txtOmegaKeyReleased
 
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
@@ -220,13 +183,11 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
-    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField txtAmplitud;
     private javax.swing.JTextField txtCteTiempo;
     private javax.swing.JTextField txtFrecuencia;
-    private javax.swing.JTextField txtOmega;
     private javax.swing.JTextField txtValorBase;
     // End of variables declaration//GEN-END:variables
 

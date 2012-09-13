@@ -17,6 +17,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jfree.chart.ChartFactory;
+import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.ValueAxis;
 import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.chart.plot.PlotOrientation;
@@ -45,12 +46,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
         //tendria que iterar solo una vez 
         for (DataInput di : input_catalog) {
             showVars(di);
-//            data.addSeries(getMainChart(di));
-////            data.addSeries(getSteady(di));
-//
-//            data.addSeries(getValorBaseUsed(di));
             data.addSeries(getEntrada(di));
-            data.addSeries(getRespuesta(di));
+            data.addSeries(getRespuestaSS(di));
+            data.addSeries(getRespuestaTotal(di));
             data.addSeries(getValorBase(di));
         }
 
@@ -70,24 +68,26 @@ public class EntradaSenoidal extends FuncionTransferencia {
         }
         return reto;
     }
-
-    /**
-     * 
-     * @param di
-     * @return 
-     */
-    private XYSeries getRespuesta(DataInput di) {
-        XYSeries reto = new XYSeries("Respuesta");
-        double phase_ang = di.getPhaseLag();
-        double calc_amp = di.getAmplitud() / Math.sqrt(Math.pow(di.getTau(), 2) * Math.pow(di.getOmega(), 2) + 1);
-        debug("Respuesta: Y(t) = A/Sqrt(tau^2*w^2+1) *sin(wt + phi) + vBase");//FirstTerm + SecondTerm*sin(wt + phi) + vBase");
-        debug("Y(t) = " + calc_amp + "*sin(" + di.getOmega() + "*t + " + phase_ang + ") + " + di.getValor_base());//FirstTerm + SecondTerm*sin("+di.getOmega()+"*t + "+phase_ang+") + "+di.getValor_base());
-
+    
+    private XYSeries getRespuestaTotal(DataInput di){
+        XYSeries reto = new XYSeries("Respuesta Total");
         double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
         DataInput.JUMP = 0.01D;
         //opc 2
         for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
-            double value = calc_amp * Math.sin(di.getOmega() * time + phase_ang) + di.getValor_base();
+            double value = getfdet(di, time, true);
+            reto.add(time, value);
+        }
+        return reto;
+    }
+    private XYSeries getRespuestaSS(DataInput di){
+        XYSeries reto = new XYSeries("Respuesta SS");
+        
+        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
+        DataInput.JUMP = 0.01D;
+        //opc 2
+        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
+            double value = getfdet(di, time, false);
             reto.add(time, value);
         }
         return reto;
@@ -96,12 +96,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
     private XYSeries getValorBase(DataInput di) {
         XYSeries reto = new XYSeries("Valor Base");
         double max_time = 4 * di.getPeriodo() + 4 * di.getTau();
-//        double xsubese = (di.getAmplitud() * di.getOmega()) / (Math.pow(di.getValor_base(), 2) + Math.pow(di.getOmega(), 2));
-//        debug(""+xsubese);
         reto.add(0, di.getValor_base());
         reto.add(max_time, di.getValor_base());
-//        reto.add(0,valor_base);
-//        reto.add(max_time,valor_base);
 
         return reto;
     }
@@ -119,31 +115,34 @@ public class EntradaSenoidal extends FuncionTransferencia {
                 false // urls
                 );
         XYPlot plot = chart.getXYPlot();
+        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+        // set the color for each series
+        for (int i = 0; i < colores.size(); i++) {
+            renderer.setSeriesPaint(i, colores.get(i));
+        }
+        plot.setRenderer(renderer);
         conf_range_plot(plot);
         conf_domain_plot(plot);
-        conf_color_plot(plot);
     }
 
     private void conf_range_plot(XYPlot plot) {
-
-        Collections.sort(input_catalog, new Comparator<DataInput>() {
-
-            public int compare(DataInput o1, DataInput o2) {
-                if (o1.getValor_base() == o2.getValor_base()) {
-                    return 0;
-                }
-                return (o1.getValor_base() > o2.getValor_base()) ? 1 : -1;
+        
+        double maxBaseValue = 0;
+        double maxAmplitud = 0;
+        for (DataInput di : input_catalog) {
+            if(maxBaseValue < di.getValor_base()){
+                maxBaseValue = di.getValor_base();
             }
-        });
-
-        //las y
-        ValueAxis currentRangeAxis = plot.getRangeAxis();
-        double max_base_val = input_catalog.get(0).getValor_base();
+            if(maxAmplitud < di.getAmplitud()){
+                maxAmplitud = di.getAmplitud();//+2 (?)
+            }
+        }
+        final NumberAxis functionAxis = new NumberAxis("y(t)");
+        functionAxis.setInverted(false);
         //2veces la diferencia entre max_base y el mas alto de los peaks
-        double amplitud = input_catalog.get(0).getAmplitud() + 2;
-        debug("DEBUG: Range axis " + max_base_val + " +- " + amplitud);
-
-        currentRangeAxis.setRange(max_base_val - amplitud, max_base_val + amplitud);
+        functionAxis.setRange(maxBaseValue - maxAmplitud, maxBaseValue + maxAmplitud);
+        plot.setRangeAxis(functionAxis);
+        
     }
 
     private void conf_domain_plot(XYPlot plot) {
@@ -175,14 +174,6 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
     }
 
-    private void conf_color_plot(XYPlot plot) {
-        //le agregamos colorcitooos
-        XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-        renderer.setSeriesPaint(0, Color.black);
-        renderer.setSeriesPaint(1, Color.blue);
-//        renderer.setSeriesPaint(2, Color.green);
-        plot.setRenderer(renderer);
-    }
 
     @Override
     public DefaultTableModel createTableModel() {
@@ -194,19 +185,23 @@ public class EntradaSenoidal extends FuncionTransferencia {
                 debug("tau: " + tau + "iterator: " + i);
                 tmodel.addRow(new Object[]{i, di.getPhaseLag(i)});
             }
-//            for(int i=1;i<=10000;i=i*10){
-//                tau= tau*i;
-//                debug("tau: "+tau+"iterator: "+i);
-//                tmodel.addRow(new Object[]{tau,di.getPhaseLag(tau)});
-//            }
         }
         return tmodel;
     }
 
     @Override
     protected double getfdet(DataInput di, double time) {
-        return getFirstTerm(di, time) + getSecondTerm(di, time);
-//        throw new UnsupportedOperationException("Not supported yet.");
+        return getfdet(di, time, true);
+    }
+    protected double getfdet(DataInput di, double time,boolean rtaTotal) {
+        double result = 0;
+        if(rtaTotal){
+            result = di.getValor_base() + getFirstTerm(di, time) + getSecondTerm(di, time);
+        }else{
+            result = di.getValor_base() + getSecondTerm(di, time);
+        }
+        return result;
+        
     }
 
     private double getFirstTerm(DataInput di, double time) {
@@ -225,43 +220,6 @@ public class EntradaSenoidal extends FuncionTransferencia {
         debug("Omega: " + di.getOmega());
         debug("Period: " + di.getPeriodo());
         debug("Phase lag: " + di.getPhaseLag());
-//        debug("Lag: "+di.getLag());
-    }
-
-    private XYSeries getMainChart(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel());
-        showVars(di);
-        //opc 1
-//        debug("Y(t)="+getAmplitudRta()+"*Sin("+omega+"t + "+getPhaseLag());
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
-        DataInput.JUMP = 0.01D;
-        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
-            //valor de Y(t)
-            double value = getfdet(di, time);//getAmplitudRta() * Math.sin(omega*time + getPhaseLag());
-            debug("primer termino... " + getFirstTerm(di, time) + " tiempo: " + time);
-            debug("segundo termino... " + getSecondTerm(di, time) + " tiempo: " + time);
-            debug("Y(" + time + ") generado: " + value);
-            //TODO: fixme??
-            reto.add(time, value * di.getValor_base());//para que se mueva como tiene que ser xD
-        }
-        return reto;
-    }
-
-    private XYSeries getValorBaseUsed(DataInput di) {
-        XYSeries reto = new XYSeries("wValorBase");
-//        showVars();
-        //opc 2
-        debug("Y(t)=" + di.getValor_base() + "*Sin(" + di.getOmega() + "t + " + di.getPhaseLag());
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
-        DataInput.JUMP = 0.01D;
-        //opc 2
-        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
-            //valor de Y(t)
-            double value = di.getValor_base() + di.getAmplitudRta() * Math.sin(di.getOmega() * time + di.getPhaseLag());
-            debug("Y(" + time + ") generado: " + value);
-            reto.add(time, value);
-        }
-        return reto;
     }
 
     @Override
