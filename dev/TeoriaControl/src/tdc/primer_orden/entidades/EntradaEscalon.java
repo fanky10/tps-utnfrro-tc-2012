@@ -82,7 +82,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
-        for (double time = 0; time < DataInput.N_TAU * maxTau; time = time + DataInput.JUMP) {
+        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time);
             debug("Y(" + time + ") generado: " + value);
@@ -103,7 +103,7 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
-        Number numberTau = DataInput.N_TAU * maxTau;
+        Number numberTau = DataInput.NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, di.getAmplitud());
         reto.add(numberTau, di.getAmplitud());
         return reto;
@@ -173,7 +173,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         return tmodel;
     }
     private Double getTiempoAsentamiento(DataInput di){
-        return DataInput.N_TAU * di.getTau();
+        return DataInput.NCTE_TAU_TABLA * di.getTau();
     }
 
     @Override

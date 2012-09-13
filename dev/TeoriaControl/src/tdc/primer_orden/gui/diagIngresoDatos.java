@@ -14,7 +14,6 @@ package tdc.primer_orden.gui;
 import java.awt.Color;
 import java.util.Collections;
 import tdc.Utilidades;
-import tdc.datos.ChartGenerator;
 import tdc.entidades.DataInputCatalog;
 import tdc.entidades.DataInput;
 
@@ -81,12 +80,6 @@ public class diagIngresoDatos extends javax.swing.JDialog {
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
         Collections.sort(data,data);
-        DataInput.TAU_MAX = data.get(0).getTau();
-        return data;
-    }
-    @Deprecated
-    public ChartGenerator getGeneradores(){
-        ChartGenerator data = new ChartGenerator();
         return data;
     }
 

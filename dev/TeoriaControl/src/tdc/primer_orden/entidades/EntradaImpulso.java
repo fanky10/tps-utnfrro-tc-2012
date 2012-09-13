@@ -69,7 +69,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic di.getTau(): " + di.getTau() + " di.getAmplitud(): " + di.getAmplitud());
-        for (double time = 0; time < DataInput.N_TAU * maxTau; time = time + DataInput.JUMP) {
+        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time);
             debug("Y(" + time + ") generado: " + value);

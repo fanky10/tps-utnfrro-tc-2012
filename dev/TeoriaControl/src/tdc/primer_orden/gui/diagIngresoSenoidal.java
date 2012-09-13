@@ -14,13 +14,8 @@ package tdc.primer_orden.gui;
 import java.awt.Color;
 import java.util.Collections;
 import tdc.Utilidades;
-import tdc.datos.SeriesGenerator;
-import tdc.datos.ChartGenerator;
 import tdc.entidades.DataInput;
 import tdc.entidades.DataInputCatalog;
-import tdc.primer_orden.entidades.EntradaSenoidal;
-//import tdc.primer_orden.entidades.EntradaEscalon;
-//import tdc.primer_orden.entidades.EntradaSenoidal;
 
 /**
  *
@@ -33,7 +28,6 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         super(parent, modal);
         initComponents();
         setLocationRelativeTo(null);
-//        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         default_values();
     }
     private void default_values(){
@@ -47,7 +41,6 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         DataInputCatalog data = new DataInputCatalog();
         data.add(new DataInput("Datos1", Utilidades.getDouble(txtAmplitud), Utilidades.getDouble(txtCteTiempo), Utilidades.getDouble(txtValorBase), Utilidades.getDouble(txtFrecuencia),Utilidades.getDouble(txtOmega),Color.red));
         Collections.sort(data,data);
-        DataInput.TAU_MAX = data.get(0).getTau();
         return data;
     }
     
@@ -61,19 +54,7 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         double frecuencia = Math.round(omega/2*Math.PI);
         Utilidades.setDouble(txtFrecuencia,frecuencia);
     }
-
-    @Deprecated
-    public ChartGenerator getGeneradores(){
-        ChartGenerator data = new ChartGenerator();
-//        data.add(new EntradaSenoidal("Datos1", Utilidades.getDouble(txtAmplitud), Utilidades.getDouble(txtCteTiempo), Utilidades.getDouble(txtValorBase), Utilidades.getDouble(txtFrecuencia)));
-//        Collections.sort(data,data);
-//        SeriesGenerator.TAU_MAX = data.get(0).getTau();//el mayor de todos es el primero :P
-//        for(SeriesGenerator dg: data){
-//            dg.generate();
-//        }
-        return data;
-    }
-
+    
     /** This method is called from within the constructor to
      * initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is

@@ -15,8 +15,8 @@ public class DataInput {
 
     public static double A = 5D;
     public static double TAU = 6D;
-    public static double TAU_MAX = 10D;
-    public static double N_TAU = 5.5D;
+    public static double NCTE_TAU_GRAFICA = 5D;
+    public static double NCTE_TAU_TABLA = 4D;
     public static double JUMP = 0.03D;
     private double amplitud = A;
     private double tau = TAU;
@@ -29,14 +29,7 @@ public class DataInput {
         this(label, amplitud, tau, 0D, 0D,color);
     }
     public DataInput(String label, double amplitud,double tau,double valor_base, double frecuencia, Color color) {
-        this(label, amplitud, tau, valor_base, frecuencia, Math.round(2*Math.PI*frecuencia), color) ;
-//        this.label = label;
-//        this.amplitud = amplitud;
-//        this.tau = tau;
-//        this.valor_base = valor_base;
-//        this.frecuencia = frecuencia;
-//        this.omega = Math.round(2*Math.PI*frecuencia);
-//        this.color=color;
+        this(label, amplitud, tau, valor_base, frecuencia, Math.round(2*Math.PI*frecuencia), color);
     }
     public DataInput(String label, double amplitud,double tau,double valor_base, double frecuencia,double omega, Color color) {
         this.label = label;
