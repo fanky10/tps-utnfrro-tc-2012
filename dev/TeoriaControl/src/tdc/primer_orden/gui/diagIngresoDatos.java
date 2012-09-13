@@ -13,14 +13,10 @@ package tdc.primer_orden.gui;
 
 import java.awt.Color;
 import java.util.Collections;
-import javax.swing.JTextField;
 import tdc.Utilidades;
-import tdc.datos.SeriesGenerator;
 import tdc.datos.ChartGenerator;
 import tdc.entidades.DataInputCatalog;
 import tdc.entidades.DataInput;
-import tdc.primer_orden.entidades.EntradaEscalon;
-import tdc.primer_orden.entidades.EntradaImpulso;
 
 /**
  *
@@ -84,39 +80,6 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         }else{
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
-//        if(tipo_entrada == ENTRADA_ESCALON){
-//            if(rb5a1t.isSelected()){
-//                data.add(new DataInput("Datos1",var1,var6,Color.red));
-//                data.add(new DataInput("Datos2",var2,var6,Color.blue));
-//                data.add(new DataInput("Datos3",var3,var6,Color.green));
-//                data.add(new DataInput("Datos4",var4,var6,Color.orange));
-//                data.add(new DataInput("Datos5",var5,var6,Color.));
-//            }else if(rb5t1a.isSelected()){
-//                data.add(new DataInput("Datos1",var6,var1));
-//                data.add(new DataInput("Datos2",var6,var2));
-//                data.add(new DataInput("Datos3",var6,var3));
-//                data.add(new DataInput("Datos4",var6,var4));
-//                data.add(new DataInput("Datos5",var6,var5));
-//            }else{
-//                //throw new IllegalArgumentException("no possible radiobutton selected!");
-//            }
-//        }else if(tipo_entrada == ENTRADA_IMPULSO){
-//            if(rb5a1t.isSelected()){
-//                data.add(new DataInput("Datos1",var1,var6));
-//                data.add(new DataInput("Datos2",var2,var6));
-//                data.add(new DataInput("Datos3",var3,var6));
-//                data.add(new DataInput("Datos4",var4,var6));
-//                data.add(new DataInput("Datos5",var5,var6));
-//            }else if(rb5t1a.isSelected()){
-//                data.add(new DataInput("Datos1",var6,var1));
-//                data.add(new DataInput("Datos2",var6,var2));
-//                data.add(new DataInput("Datos3",var6,var3));
-//                data.add(new DataInput("Datos4",var6,var4));
-//                data.add(new DataInput("Datos5",var6,var5));
-//            }else{
-//                //throw new IllegalArgumentException("no possible radiobutton selected!");
-//            }
-//        }
         Collections.sort(data,data);
         DataInput.TAU_MAX = data.get(0).getTau();
         return data;
@@ -124,50 +87,6 @@ public class diagIngresoDatos extends javax.swing.JDialog {
     @Deprecated
     public ChartGenerator getGeneradores(){
         ChartGenerator data = new ChartGenerator();
-//        double var1 = Utilidades.getDouble(txtCtei1);
-//        double var2 = Utilidades.getDouble(txtCtei2);
-//        double var3 = Utilidades.getDouble(txtCtei3);
-//        double var4 = Utilidades.getDouble(txtCtei4);
-//        double var5 = Utilidades.getDouble(txtCtei5);
-//        double var6 = Utilidades.getDouble(txtCtej1);
-//        if(tipo_entrada == ENTRADA_ESCALON){
-//            if(rb5a1t.isSelected()){
-//                data.add(new EntradaEscalon("Datos1",var1,var6));
-//                data.add(new EntradaEscalon("Datos2",var2,var6));
-//                data.add(new EntradaEscalon("Datos3",var3,var6));
-//                data.add(new EntradaEscalon("Datos4",var4,var6));
-//                data.add(new EntradaEscalon("Datos5",var5,var6));
-//            }else if(rb5t1a.isSelected()){
-//                data.add(new EntradaEscalon("Datos1",var6,var1));
-//                data.add(new EntradaEscalon("Datos2",var6,var2));
-//                data.add(new EntradaEscalon("Datos3",var6,var3));
-//                data.add(new EntradaEscalon("Datos4",var6,var4));
-//                data.add(new EntradaEscalon("Datos5",var6,var5));
-//            }else{
-//                //throw new IllegalArgumentException("no possible radiobutton selected!");
-//            }
-//        }else if(tipo_entrada == ENTRADA_IMPULSO){
-//            if(rb5a1t.isSelected()){
-//                data.add(new EntradaImpulso("Datos1",var1,var6));
-//                data.add(new EntradaImpulso("Datos2",var2,var6));
-//                data.add(new EntradaImpulso("Datos3",var3,var6));
-//                data.add(new EntradaImpulso("Datos4",var4,var6));
-//                data.add(new EntradaImpulso("Datos5",var5,var6));
-//            }else if(rb5t1a.isSelected()){
-//                data.add(new EntradaImpulso("Datos1",var6,var1));
-//                data.add(new EntradaImpulso("Datos2",var6,var2));
-//                data.add(new EntradaImpulso("Datos3",var6,var3));
-//                data.add(new EntradaImpulso("Datos4",var6,var4));
-//                data.add(new EntradaImpulso("Datos5",var6,var5));
-//            }else{
-//                //throw new IllegalArgumentException("no possible radiobutton selected!");
-//            }
-//        }
-//        Collections.sort(data,data);
-//        SeriesGenerator.TAU_MAX = data.get(0).getTau();//el mayor de todos es el primero :P
-//        for(SeriesGenerator dg: data){
-//            dg.generate();
-//        }
         return data;
     }
 

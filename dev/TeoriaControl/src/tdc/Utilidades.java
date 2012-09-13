@@ -16,7 +16,7 @@ public class Utilidades {
     public static final DecimalFormat DECIMAL_FORMATTER = new DecimalFormat("###.##");
     public static double getDouble(JTextField txt){
         try{
-            double dd = Double.parseDouble(txt.getText());
+            double dd = Double.parseDouble(txt.getText().replace(",", "."));
             return dd;
         }catch(NumberFormatException ex){
             System.out.println("what the hell happened! "+ex.getMessage());
