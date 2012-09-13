@@ -18,6 +18,7 @@ import tdc.entidades.DataInput;
 import tdc.entidades.DataInputCatalog;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
+import tdc.util.ApplicationConstants;
 
 /**
  * 5Tau en cte tiempo
@@ -79,7 +80,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "1di.getTau()");
+        XYSeries reto = new XYSeries(di.getLabel() + " 1"+ApplicationConstants.UNICODE_TAU);
         //el valor de y(t) cuando t=1di.getTau()
         double value = getfdet(di, di.getTau());
 //        debug("============================================");

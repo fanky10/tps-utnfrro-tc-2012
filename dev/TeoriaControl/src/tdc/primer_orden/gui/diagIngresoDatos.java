@@ -33,16 +33,15 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         rb5a1t.setSelected(true);
         cambia_label();
         setLocationRelativeTo(null);
-//        setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         default_values();
     }
     private void cambia_label(){
         if(rb5a1t.isSelected()){
-            lbl5Var.setText("Datos de AMPLITUD");
-            lbl1Var.setText("Dato de TIEMPO");
+            lbl5Var.setText("Ingrese AMPLITUDES");
+            lbl1Var.setText("Ingrese Constante de TIEMPO");
         }else if(rb5t1a.isSelected()){
-            lbl5Var.setText("Datos de TIEMPO");
-            lbl1Var.setText("Dato de AMPLITUD");
+            lbl5Var.setText("Ingrese Constantes de TIEMPO");
+            lbl1Var.setText("Ingrese AMPLITUD");
         }else{
             throw new IllegalArgumentException("no possible radiobutton selected!");
         }

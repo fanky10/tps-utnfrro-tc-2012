@@ -80,7 +80,8 @@ public class DataInput {
     }
 
     public String getLabel() {
-        return label;
+        //return label;
+        return "[A: "+amplitud+"|T: "+tau+"]";
     }
 
     public void setLabel(String label) {

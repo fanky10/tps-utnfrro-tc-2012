@@ -34,18 +34,7 @@ public class frmTest extends javax.swing.JFrame {
         init();
     }
     private void init(){
-        XYChart hola = new XYChart(chart);
         getContentPane().add(new tdc.entidades.XYChart(chart),java.awt.BorderLayout.CENTER);
-    }
-    private void updPlot(int max){
-
-        XYSeries series = new XYSeries("XYGraph");
-        for(double i=0;i<max;i++){
-            series.add(i,Math.pow(i, 2));
-        }
-        XYSeriesCollection coll = new XYSeriesCollection(series);
-        XYPlot p = chart.getXYPlot();
-        p.setDataset(coll);
     }
 
     /** This method is called from within the constructor to
@@ -73,18 +62,7 @@ public class frmTest extends javax.swing.JFrame {
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
-    /**
-    * @param args the command line arguments
-    */
-//    public static void main(String args[]) {
-//        java.awt.EventQueue.invokeLater(new Runnable() {
-//            public void run() {
-//                new frmTest().setVisible(true);
-//            }
-//        });
-//    }
-
-
+    
     public static void main(String args[]){
         final JFreeChart chart = LineChart.getChart();
         JFrame frmMain = new JFrame("TeoriaDeControl v0.02");

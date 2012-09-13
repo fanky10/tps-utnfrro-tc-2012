@@ -92,7 +92,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
     
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "1"+ ApplicationConstants.UNICODE_TAU);
+        XYSeries reto = new XYSeries(di.getLabel() + " 1"+ ApplicationConstants.UNICODE_TAU);
         double value = getfdet(di, di.getTau());
         reto.add(0, value);
         reto.add(di.getTau(), value);
