@@ -52,14 +52,18 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida"}, 0);
+        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
         for (DataInput di : input_catalog) {
             tmodel.addRow(new Object[]{di.getLabel(),
-//                        Utilidades.DECIMAL_FORMATTER.format(getTiempoSubida(di)),
-                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di))
+                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
+                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
                     });
         }
         return tmodel;
+    }
+
+    private Double getTiempoAsentamiento(DataInput di) {
+        return DataInput.NCTE_TAU_TABLA * di.getTau();
     }
 
     public double getPorcentajeTabla(DataInput di) {
@@ -80,7 +84,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + " 1"+ApplicationConstants.UNICODE_TAU);
+        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
         //el valor de y(t) cuando t=1di.getTau()
         double value = getfdet(di, di.getTau());
 //        debug("============================================");

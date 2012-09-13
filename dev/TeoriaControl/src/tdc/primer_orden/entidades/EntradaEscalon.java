@@ -90,16 +90,15 @@ public class EntradaEscalon extends FuncionTransferencia {
         }
         return reto;
     }
-    
+
     private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + " 1"+ ApplicationConstants.UNICODE_TAU);
+        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
         double value = getfdet(di, di.getTau());
         reto.add(0, value);
         reto.add(di.getTau(), value);
         reto.add(di.getTau(), 0);
         return reto;
     }
-    
 
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
@@ -108,7 +107,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         reto.add(numberTau, di.getAmplitud());
         return reto;
     }
-    
+
     //</editor-fold>
     @Override
     protected void createDataset() {
@@ -150,7 +149,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         timeAxis.setInverted(false);
         timeAxis.setRange(0.0, 5 * maxTau);
         timeAxis.setTickUnit(new NumberTickUnit(1));
-        
+
         final NumberAxis functionAxis = new NumberAxis("y(t)");
         functionAxis.setInverted(false);
 //        functionAxis.setRange(0.0, 5 * maxTau);//automatic
@@ -172,7 +171,8 @@ public class EntradaEscalon extends FuncionTransferencia {
         }
         return tmodel;
     }
-    private Double getTiempoAsentamiento(DataInput di){
+
+    private Double getTiempoAsentamiento(DataInput di) {
         return DataInput.NCTE_TAU_TABLA * di.getTau();
     }
 
