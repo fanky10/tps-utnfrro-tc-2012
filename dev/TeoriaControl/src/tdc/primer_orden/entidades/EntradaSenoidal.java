@@ -36,9 +36,18 @@ import tdc.entidades.FuncionTransferencia;
  * @author fanky
  */
 public class EntradaSenoidal extends FuncionTransferencia {
-
+    private double maxTime = 0D;
     public EntradaSenoidal(DataInputCatalog input) {
         super(input);
+        init();
+    }
+    private void init(){
+        
+        for (DataInput di : input_catalog) {
+            if(maxTime < di.getPeriodo()*5){
+                maxTime = di.getPeriodo() * 5;
+            }
+        }
     }
 
     @Override
@@ -56,12 +65,11 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
     private XYSeries getEntrada(DataInput di) {
         XYSeries reto = new XYSeries("Entrada");
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
         DataInput.JUMP = 0.01D;
         //double y = (a*(Math.Sin(w*i))) + vb;
         debug("Entrada: X(t) = A * sin(wt) + vBase");
         debug("X(t) = " + di.getAmplitud() + "*sin(" + di.getOmega() + "*t) +" + di.getValor_base());
-        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             //s/me
             double value = di.getAmplitud() * Math.sin(di.getOmega() * time) + di.getValor_base();
             reto.add(time, value);
@@ -71,10 +79,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
     
     private XYSeries getRespuestaTotal(DataInput di){
         XYSeries reto = new XYSeries("Respuesta Total");
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
         DataInput.JUMP = 0.01D;
         //opc 2
-        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             double value = getfdet(di, time, true);
             reto.add(time, value);
         }
@@ -82,11 +89,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
     private XYSeries getRespuestaSS(DataInput di){
         XYSeries reto = new XYSeries("Respuesta SS");
-        
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();//4 periodos 4tau para que se tranquilice :P
         DataInput.JUMP = 0.01D;
         //opc 2
-        for (double time = 0; time < max_time; time = time + DataInput.JUMP) {
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             double value = getfdet(di, time, false);
             reto.add(time, value);
         }
@@ -95,9 +100,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
     private XYSeries getValorBase(DataInput di) {
         XYSeries reto = new XYSeries("Valor Base");
-        double max_time = 4 * di.getPeriodo() + 4 * di.getTau();
         reto.add(0, di.getValor_base());
-        reto.add(max_time, di.getValor_base());
+        reto.add(maxTime, di.getValor_base());
 
         return reto;
     }
@@ -137,10 +141,11 @@ public class EntradaSenoidal extends FuncionTransferencia {
                 maxAmplitud = di.getAmplitud();//+2 (?)
             }
         }
+        double changui = maxAmplitud * 0.05;
         final NumberAxis functionAxis = new NumberAxis("y(t)");
         functionAxis.setInverted(false);
         //2veces la diferencia entre max_base y el mas alto de los peaks
-        functionAxis.setRange(maxBaseValue - maxAmplitud, maxBaseValue + maxAmplitud);
+        functionAxis.setRange(maxBaseValue - maxAmplitud - changui, maxBaseValue + maxAmplitud + changui);
         plot.setRangeAxis(functionAxis);
         
     }
@@ -148,29 +153,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
     private void conf_domain_plot(XYPlot plot) {
         //las x
         ValueAxis currentDomainAxis = plot.getDomainAxis();
-        Collections.sort(input_catalog, new Comparator<DataInput>() {
-
-            public int compare(DataInput o1, DataInput o2) {
-                if (o1.getTau() == o2.getTau()) {
-                    return 0;
-                }
-                return (o1.getTau() > o2.getTau()) ? 1 : -1;
-            }
-        });
-        double max_tau_val = input_catalog.get(0).getTau();
-        Collections.sort(input_catalog, new Comparator<DataInput>() {
-
-            public int compare(DataInput o1, DataInput o2) {
-                if (o1.getPeriodo() == o2.getPeriodo()) {
-                    return 0;
-                }
-                return (o1.getPeriodo() > o2.getPeriodo()) ? 1 : -1;
-            }
-        });
-        double max_period_val = input_catalog.get(0).getPeriodo();
-        double max_range = 4 * max_period_val + 3 * max_tau_val;
-        debug("DEBUG: Domain axis " + max_range);
-        currentDomainAxis.setRange(0, max_range);//0,4D * max_period_val + 3D * max_tau_val);
+        currentDomainAxis.setRange(0, maxTime);//0,4D * max_period_val + 3D * max_tau_val);
 
     }
 

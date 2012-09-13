@@ -31,9 +31,9 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         default_values();
     }
     private void default_values(){
-        Utilidades.setDouble(txtCteTiempo,0.1);
+        Utilidades.setDouble(txtCteTiempo,0.5);
         Utilidades.setDouble(txtValorBase,100);
-        Utilidades.setDouble(txtAmplitud, 2);
+        Utilidades.setDouble(txtAmplitud, 5);
         Utilidades.setDouble(txtFrecuencia,3.18);
     }
     public DataInputCatalog getDatosIngresados(){

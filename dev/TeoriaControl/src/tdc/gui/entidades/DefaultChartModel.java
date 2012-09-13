@@ -4,17 +4,12 @@
  */
 package tdc.gui.entidades;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
 import javax.swing.JPanel;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
-import org.jfree.chart.plot.XYPlot;
-import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
-import tdc.datos.SeriesGenerator;
 import tdc.entidades.XYChart;
 
 /**
@@ -35,7 +30,7 @@ public class DefaultChartModel implements ChartModel{
         this.chart_panel = new XYChart(chart);
     }
     public DefaultChartModel(){
-        this(DEFAULT_TITLE, new NumberAxis(X_AXIS_LABEL), new NumberAxis(X_AXIS_LABEL),new XYSeriesCollection());
+        this(DEFAULT_TITLE, new NumberAxis(X_AXIS_LABEL), new NumberAxis(Y_AXIS_LABEL),new XYSeriesCollection());
     }
     public DefaultChartModel(String title, String x_axis_label, String y_axis_label){
         this(title, new NumberAxis(x_axis_label), new NumberAxis(y_axis_label),new XYSeriesCollection());

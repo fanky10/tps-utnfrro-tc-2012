@@ -33,7 +33,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaEscalon extends FuncionTransferencia {
-
+    public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Escalon";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
 
@@ -128,7 +128,7 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     protected void createChart() {
         chart = ChartFactory.createXYLineChart(
-                "Entrada Escalon", // chart title
+                CHART_TITLE, // chart title
                 "tiempo", // domain axis label
                 "Y(t)", // range axis label
                 data, // data

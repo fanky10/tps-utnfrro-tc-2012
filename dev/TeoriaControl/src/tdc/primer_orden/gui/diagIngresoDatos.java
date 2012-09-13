@@ -52,7 +52,7 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         Utilidades.setDouble(txtCtei3,3D);
         Utilidades.setDouble(txtCtei4,4D);
         Utilidades.setDouble(txtCtei5,5D);
-        Utilidades.setDouble(txtCtej1,6.5D);
+        Utilidades.setDouble(txtCtej1,7D);
 
     }
     public DataInputCatalog getDatosIngresados(){

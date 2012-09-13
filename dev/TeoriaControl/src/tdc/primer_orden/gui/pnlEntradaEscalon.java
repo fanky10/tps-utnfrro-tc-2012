@@ -32,7 +32,7 @@ public class pnlEntradaEscalon extends JPanel {
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Escalon", "Tiempo", "Y(t)"));
+        cPanel = new CustomChartPanel(new DefaultChartModel(EntradaEscalon.CHART_TITLE, "Tiempo", "Y(t)"));
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 

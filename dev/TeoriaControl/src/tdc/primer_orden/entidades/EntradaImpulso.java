@@ -52,10 +52,9 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
+        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Asentamiento"}, 0);
         for (DataInput di : input_catalog) {
             tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
                         Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
                     });
         }
