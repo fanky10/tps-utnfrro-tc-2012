@@ -80,8 +80,11 @@ public class pnlEntradaEscalon extends JPanel {
         jButton2 = new javax.swing.JButton();
         chkVerAmplitud = new javax.swing.JCheckBox();
 
+        pnlGrafico.setBackground(new java.awt.Color(255, 255, 255));
         pnlGrafico.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         pnlGrafico.setLayout(new java.awt.BorderLayout());
+
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
 
         jButton1.setText("Ingresar Datos");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -99,6 +102,7 @@ public class pnlEntradaEscalon extends JPanel {
         });
         jPanel1.add(jButton2);
 
+        chkVerAmplitud.setBackground(new java.awt.Color(255, 255, 255));
         chkVerAmplitud.setSelected(true);
         chkVerAmplitud.setText("Ver Amplitud");
         chkVerAmplitud.addActionListener(new java.awt.event.ActionListener() {

@@ -74,6 +74,8 @@ public class pnlEntradaSenoidal extends JPanel {
         jButton2 = new javax.swing.JButton();
         pnlGrafico = new javax.swing.JPanel();
 
+        jPanel1.setBackground(new java.awt.Color(255, 255, 255));
+
         jButton1.setText("Ingresar Datos");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -90,6 +92,7 @@ public class pnlEntradaSenoidal extends JPanel {
         });
         jPanel1.add(jButton2);
 
+        pnlGrafico.setBackground(new java.awt.Color(255, 255, 255));
         pnlGrafico.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         pnlGrafico.setLayout(new java.awt.BorderLayout());
 
@@ -97,7 +100,6 @@ public class pnlEntradaSenoidal extends JPanel {
         this.setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 484, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -107,7 +109,6 @@ public class pnlEntradaSenoidal extends JPanel {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 329, Short.MAX_VALUE)
             .addGroup(layout.createSequentialGroup()
                 .addGap(11, 11, 11)
                 .addComponent(jPanel1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)

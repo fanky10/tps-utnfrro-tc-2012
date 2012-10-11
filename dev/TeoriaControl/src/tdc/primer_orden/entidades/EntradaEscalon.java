@@ -79,7 +79,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         return tmax - tmin;
     }
 
-    private XYSeries getMainChart(DataInput di) {
+        private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {

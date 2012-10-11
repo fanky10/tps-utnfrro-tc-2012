@@ -44,8 +44,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
     private void init(){
         
         for (DataInput di : input_catalog) {
-            if(maxTime < di.getPeriodo()*5){
-                maxTime = di.getPeriodo() * 5;
+            if(maxTime < di.getPeriodo()*4){
+                maxTime = di.getPeriodo() * 4;
             }
         }
     }

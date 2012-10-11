@@ -77,6 +77,8 @@ public class pnlEntradaImpulso extends JPanel {
         jButton4 = new javax.swing.JButton();
         pnlGrafico = new javax.swing.JPanel();
 
+        jPanel3.setBackground(new java.awt.Color(255, 255, 255));
+
         jButton3.setText("Ingresar Datos");
         jButton3.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -93,6 +95,7 @@ public class pnlEntradaImpulso extends JPanel {
         });
         jPanel3.add(jButton4);
 
+        pnlGrafico.setBackground(new java.awt.Color(255, 255, 255));
         pnlGrafico.setBorder(javax.swing.BorderFactory.createEtchedBorder());
         pnlGrafico.setLayout(new java.awt.BorderLayout());
 
