@@ -163,12 +163,13 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel();
-        tmodel.setColumnIdentifiers(new Object[]{"Tau", "Phi"});
+        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Retardo de Fase"});
         double tau = 0.01D;
         for (DataInput di : input_catalog) {
             for (double i = 0.01; i < 1000; i = i * 10) {
                 debug("tau: " + tau + "iterator: " + i);
-                tmodel.addRow(new Object[]{i, di.getPhaseLag(i)});
+                tmodel.addRow(new Object[]{i, 
+                    (double)Math.round(di.getPhaseLag(i) * 100) / 100});
             }
         }
         return tmodel;
