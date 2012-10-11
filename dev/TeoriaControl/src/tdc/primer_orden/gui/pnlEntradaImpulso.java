@@ -30,7 +30,7 @@ public class pnlEntradaImpulso extends JPanel {
     /** Creates new form pnlEscalon */
     public pnlEntradaImpulso() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso", "Tiempo", "Y(t)"));
+        cPanel = new CustomChartPanel(new DefaultChartModel(EntradaImpulso.CHART_TITLE, "Tiempo", "Y(t)"));
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 

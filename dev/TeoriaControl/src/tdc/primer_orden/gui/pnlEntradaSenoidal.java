@@ -30,7 +30,7 @@ public class pnlEntradaSenoidal extends JPanel {
     /** Creates new form pnlEscalon */
     public pnlEntradaSenoidal() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel("Rta. a entrada del tipo Impulso", "Tiempo", "Y(t)"));
+        cPanel = new CustomChartPanel(new DefaultChartModel(EntradaSenoidal.CHART_TITLE, "Tiempo", "Y(t)"));
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 

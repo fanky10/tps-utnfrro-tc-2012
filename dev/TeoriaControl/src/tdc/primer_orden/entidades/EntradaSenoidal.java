@@ -10,8 +10,6 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
@@ -36,15 +34,19 @@ import tdc.entidades.FuncionTransferencia;
  * @author fanky
  */
 public class EntradaSenoidal extends FuncionTransferencia {
+
+    public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Senoidal";
     private double maxTime = 0D;
+
     public EntradaSenoidal(DataInputCatalog input) {
         super(input);
         init();
     }
-    private void init(){
-        
+
+    private void init() {
+
         for (DataInput di : input_catalog) {
-            if(maxTime < di.getPeriodo()*4){
+            if (maxTime < di.getPeriodo() * 4) {
                 maxTime = di.getPeriodo() * 4;
             }
         }
@@ -76,8 +78,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
         }
         return reto;
     }
-    
-    private XYSeries getRespuestaTotal(DataInput di){
+
+    private XYSeries getRespuestaTotal(DataInput di) {
         XYSeries reto = new XYSeries("Respuesta Total");
         DataInput.JUMP = 0.01D;
         //opc 2
@@ -87,7 +89,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
         }
         return reto;
     }
-    private XYSeries getRespuestaSS(DataInput di){
+
+    private XYSeries getRespuestaSS(DataInput di) {
         XYSeries reto = new XYSeries("Respuesta SS");
         DataInput.JUMP = 0.01D;
         //opc 2
@@ -109,7 +112,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     protected void createChart() {
         chart = ChartFactory.createXYLineChart(
-                "Entrada Senoidal", // chart title
+                CHART_TITLE, // chart title
                 "t", // domain axis label
                 "Y(t)", // range axis label
                 data, // data
@@ -130,14 +133,14 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     private void conf_range_plot(XYPlot plot) {
-        
+
         double maxBaseValue = 0;
         double maxAmplitud = 0;
         for (DataInput di : input_catalog) {
-            if(maxBaseValue < di.getValor_base()){
+            if (maxBaseValue < di.getValor_base()) {
                 maxBaseValue = di.getValor_base();
             }
-            if(maxAmplitud < di.getAmplitud()){
+            if (maxAmplitud < di.getAmplitud()) {
                 maxAmplitud = di.getAmplitud();//+2 (?)
             }
         }
@@ -147,7 +150,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
         //2veces la diferencia entre max_base y el mas alto de los peaks
         functionAxis.setRange(maxBaseValue - maxAmplitud - changui, maxBaseValue + maxAmplitud + changui);
         plot.setRangeAxis(functionAxis);
-        
+
     }
 
     private void conf_domain_plot(XYPlot plot) {
@@ -156,7 +159,6 @@ public class EntradaSenoidal extends FuncionTransferencia {
         currentDomainAxis.setRange(0, maxTime);//0,4D * max_period_val + 3D * max_tau_val);
 
     }
-
 
     @Override
     public DefaultTableModel createTableModel() {
@@ -176,15 +178,16 @@ public class EntradaSenoidal extends FuncionTransferencia {
     protected double getfdet(DataInput di, double time) {
         return getfdet(di, time, true);
     }
-    protected double getfdet(DataInput di, double time,boolean rtaTotal) {
+
+    protected double getfdet(DataInput di, double time, boolean rtaTotal) {
         double result = 0;
-        if(rtaTotal){
+        if (rtaTotal) {
             result = di.getValor_base() + getFirstTerm(di, time) + getSecondTerm(di, time);
-        }else{
+        } else {
             result = di.getValor_base() + getSecondTerm(di, time);
         }
         return result;
-        
+
     }
 
     private double getFirstTerm(DataInput di, double time) {

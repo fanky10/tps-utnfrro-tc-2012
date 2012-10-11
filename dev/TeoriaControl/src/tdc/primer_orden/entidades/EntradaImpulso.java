@@ -25,7 +25,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaImpulso extends FuncionTransferencia {
-
+    public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
 
     public EntradaImpulso(DataInputCatalog input) {
@@ -121,7 +121,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     @Override
     protected void createChart() {
         chart = ChartFactory.createXYLineChart(
-                "Entrada Impulso", // chart title
+                CHART_TITLE,
                 "tiempo", // domain axis label
                 "Y(t)", // range axis label
                 data, // data
