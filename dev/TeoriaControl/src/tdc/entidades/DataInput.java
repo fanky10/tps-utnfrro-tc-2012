@@ -12,7 +12,9 @@ import java.awt.Color;
  * @author fanky
  */
 public class DataInput {
-
+    public static enum PHASE_LAG_TYPE{
+        DEGREES,RADIANS,
+    }
     public static double A = 5D;
     public static double TAU = 6D;
     public static double NCTE_TAU_GRAFICA = 5D;
@@ -25,34 +27,38 @@ public class DataInput {
     private double valor_base;//equis sub s
     private double frecuencia;
     private double omega;
+    private double phaseLag;
+    
     public DataInput(String label, double amplitud,double tau,Color color){
         this(label, amplitud, tau, 0D, 0D,color);
     }
-    public DataInput(String label, double amplitud,double tau,double valor_base, double frecuencia, Color color) {
-        this(label, amplitud, tau, valor_base, frecuencia, Math.round(2*Math.PI*frecuencia), color);
-    }
-    public DataInput(String label, double amplitud,double tau,double valor_base, double frecuencia,double omega, Color color) {
+    public DataInput(String label, double amplitud,double tau,double valor_base, double omega, Color color) {
         this.label = label;
         this.amplitud = amplitud;
         this.tau = tau;
         this.valor_base = valor_base;
-        this.frecuencia = frecuencia;
         this.omega = omega;
         this.color=color;
+        this.phaseLag = Math.atan(-omega*tau);
     }
+    
 
     public double getOmega() {
         return omega;
     }
-    public double getPhaseLag(){//phase lag
-        return Math.toDegrees(Math.atan(-omega*tau));
+    public double getPhaseLag(){
+        return phaseLag;
+    }
+    public double getPhaseLag(PHASE_LAG_TYPE phaseLagType){
+        if(phaseLagType.equals(PHASE_LAG_TYPE.DEGREES)){
+            return Math.toDegrees(Math.atan(-omega*tau));
+        }
+//        return Math.abs(getPhaseLag())/(360*frecuencia);
+        return phaseLag;
     }
     public double getPhaseLag(double tau){//phi
         return Math.toDegrees(Math.atan(-omega*tau));
     }
-//    public double getLag(){
-//        return Math.abs(getPhaseLag())/(360*frecuencia);
-//    }
 
     public double getAmplitudRta(){
         return amplitud/Math.sqrt(Math.pow(tau, 2)*Math.pow(omega, 2)+1);

@@ -31,10 +31,11 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         default_values();
     }
     private void default_values(){
-        Utilidades.setDouble(txtCteTiempo,0.5);
         Utilidades.setDouble(txtValorBase,100);
         Utilidades.setDouble(txtAmplitud, 5);
-        Utilidades.setDouble(txtFrecuencia,3.18);
+        Utilidades.setDouble(txtFrecuencia,1);//3.18);
+        Utilidades.setDouble(txtCteTiempo,2);
+        
     }
     public DataInputCatalog getDatosIngresados(){
         DataInputCatalog data = new DataInputCatalog();
@@ -92,7 +93,7 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         });
         jPanel1.add(txtAmplitud);
 
-        jLabel4.setText("Frecuencia");
+        jLabel4.setText("Frecuencia (rad/min)");
         jPanel1.add(jLabel4);
 
         txtFrecuencia.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -107,7 +108,7 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         });
         jPanel1.add(txtFrecuencia);
 
-        jLabel5.setText("Cte Tiempo");
+        jLabel5.setText("Cte Tiempo (min)");
         jPanel1.add(jLabel5);
 
         txtCteTiempo.addFocusListener(new java.awt.event.FocusAdapter() {
