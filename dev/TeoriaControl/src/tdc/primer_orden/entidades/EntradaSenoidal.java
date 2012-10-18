@@ -163,13 +163,15 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel();
-        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Retardo de Fase"});
+        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad" });
         double tau = 0.01D;
         for (DataInput di : input_catalog) {
             for (double i = 0.01; i < 1000; i = i * 10) {
                 debug("tau: " + tau + "iterator: " + i);
                 tmodel.addRow(new Object[]{i, 
-                    (double)Math.round(di.getPhaseLag(i) * 100) / 100});
+                    (double)Math.round(di.getPhaseLag(i) * 100) / 100, 
+                    convertToMin((double)Math.round(di.getPhaseLag(i) * 100) / 100),
+                    convertToRad((double)Math.round(di.getPhaseLag(i) * 100) / 100)});
             }
         }
         return tmodel;
@@ -212,6 +214,32 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     public TableCellRenderer createTableRenderer() {
         return new DefaultTableCellRenderer();
+    }
+
+    private Object convertToMin(double d) {
+        int intNum = (int)d;
+        double decNum = d - intNum;
+        String minAndSec = getMinAndSec(decNum);
+        
+        String min= intNum + "°" + minAndSec;
+        
+        return min;
+    }
+
+    private Object convertToRad(double d) {
+        double rad = d * (Math.PI / 180);
+        rad = (double)Math.round(rad * 100) / 100;
+        return rad;
+    }
+
+    private String getMinAndSec(double decNum) {
+        String minAndSec="";
+        double minutes = decNum * 60;
+        int min = (int)minutes;
+        double seconds = minutes - min;
+        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
+        minAndSec = min + "' " + seconds + "''" ;
+        return minAndSec;
     }
 
     //otra forma mas elaborada...
