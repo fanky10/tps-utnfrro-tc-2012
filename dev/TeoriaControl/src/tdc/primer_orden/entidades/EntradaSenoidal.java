@@ -174,7 +174,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
                     convertToRad((double)Math.round(di.getPhaseLag(i) * 100) / 100)});
             }
         }
-        tmodel.addRow(new Object[]{"Infinity","-90"});
+        tmodel.addRow(new Object[]{"∞","-90"});
         return tmodel;
     }
 
