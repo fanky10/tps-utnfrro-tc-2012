@@ -166,7 +166,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
         tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad" });
         double tau = 0.01D;
         for (DataInput di : input_catalog) {
-            for (double i = 0.01; i < 1000; i = i * 10) {
+            for (double i = 0.01; i <= 1000; i = i * 10) {
                 debug("tau: " + tau + "iterator: " + i);
                 tmodel.addRow(new Object[]{i, 
                     (double)Math.round(di.getPhaseLag(i) * 100) / 100, 
@@ -174,6 +174,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
                     convertToRad((double)Math.round(di.getPhaseLag(i) * 100) / 100)});
             }
         }
+        tmodel.addRow(new Object[]{"Infinity","-90"});
         return tmodel;
     }
 
