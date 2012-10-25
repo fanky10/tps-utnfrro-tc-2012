@@ -21,6 +21,8 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.ui.RectangleEdge;
 import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
@@ -33,6 +35,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaEscalon extends FuncionTransferencia {
+
     public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
@@ -79,7 +82,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         return tmax - tmin;
     }
 
-        private XYSeries getMainChart(DataInput di) {
+    private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
@@ -137,6 +140,8 @@ public class EntradaEscalon extends FuncionTransferencia {
                 true, // tooltips
                 false // urls
                 );
+        LegendTitle legend = chart.getLegend();
+        legend.setPosition(RectangleEdge.RIGHT);
         XYPlot plot = chart.getXYPlot();
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
         // set the color for each series
