@@ -25,7 +25,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaImpulso extends FuncionTransferencia {
-    public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Impulso";
+    public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
 
     public EntradaImpulso(DataInputCatalog input) {

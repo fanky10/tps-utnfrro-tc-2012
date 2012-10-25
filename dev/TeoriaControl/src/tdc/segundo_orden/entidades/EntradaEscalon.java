@@ -33,7 +33,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaEscalon extends FuncionTransferencia {
-    public static String CHART_TITLE = "Respuesta Transiente Sistema Primer orden: Entrada tipo Escalón";
+    public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
 

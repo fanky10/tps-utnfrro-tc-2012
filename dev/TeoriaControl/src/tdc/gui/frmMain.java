@@ -11,21 +11,17 @@
 
 package tdc.gui;
 
-import tdc.primer_orden.gui.pnlEntradaEscalon;
-import tdc.primer_orden.gui.pnlEntradaImpulso;
+import java.util.ArrayList;
+import java.util.List;
+import javax.swing.JPanel;
 import tdc.Configuracion;
-import tdc.primer_orden.gui.pnlEntradaSenoidal;
 
 /**
  *
  * @author fanky
  */
 public class frmMain extends javax.swing.JFrame {
-    //los informes de primer orden
-    private pnlEntradaEscalon pnl_escalon;
-    private pnlEntradaImpulso pnl_impulso;
-    private pnlEntradaSenoidal pnl_senoidal;
-
+    
     private static final String TITLE = "Teoria de Control "+Configuracion.getVersion();
     /** Creates new form frmMain */
     public frmMain() {
@@ -33,20 +29,29 @@ public class frmMain extends javax.swing.JFrame {
         setTitle(TITLE);
         setLocationRelativeTo(null);
         setExtendedState(MAXIMIZED_BOTH);
-        agrega_primer_orden();
+        agregaPrimerOrden();
     }
 
-    private void agrega_primer_orden(){
+    private void agregaPrimerOrden(){
+        final List<JPanel> paneles = new ArrayList<JPanel>();
+        paneles.add(new tdc.primer_orden.gui.pnlEntradaEscalon());
+        paneles.add(new tdc.primer_orden.gui.pnlEntradaImpulso());
+        paneles.add(new tdc.primer_orden.gui.pnlEntradaSenoidal());
+        actualizaPaneles(paneles);
+    }
+    private void agregaSegundoOrden(){
+        
+        final List<JPanel> paneles = new ArrayList<JPanel>();
+        paneles.add(new tdc.segundo_orden.gui.pnlEntradaEscalon());
+        paneles.add(new tdc.segundo_orden.gui.pnlEntradaImpulso());
+        paneles.add(new tdc.segundo_orden.gui.pnlEntradaSenoidal());
+        actualizaPaneles(paneles);
+    }
+    private void actualizaPaneles(java.util.List<JPanel> paneles){
         tbdPane.removeAll();
-
-        pnl_escalon = new pnlEntradaEscalon();
-        tbdPane.add(pnl_escalon.toString(), pnl_escalon);
-
-        pnl_impulso = new pnlEntradaImpulso();
-        tbdPane.add(pnl_impulso.toString(),pnl_impulso);
-
-        pnl_senoidal = new pnlEntradaSenoidal();
-        tbdPane.add(pnl_senoidal.toString(),pnl_senoidal);
+        for(JPanel jPanel : paneles){
+            tbdPane.add(jPanel.toString(),jPanel);
+        }
     }
 
     /** This method is called from within the constructor to
@@ -87,6 +92,11 @@ public class frmMain extends javax.swing.JFrame {
         jButton2.setFocusable(false);
         jButton2.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         jButton2.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
         jToolBar1.add(jButton2);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
@@ -111,8 +121,12 @@ public class frmMain extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        agrega_primer_orden();
+        agregaPrimerOrden();
     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        agregaSegundoOrden();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton jButton1;
