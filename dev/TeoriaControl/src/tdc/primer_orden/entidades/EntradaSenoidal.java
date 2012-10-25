@@ -10,7 +10,9 @@ import java.awt.Paint;
 import java.awt.Shape;
 import java.awt.Stroke;
 import java.awt.geom.Rectangle2D;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -61,6 +63,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
             data.addSeries(getRespuestaSS(di));
             data.addSeries(getRespuestaTotal(di));
             data.addSeries(getValorBase(di));
+            data.addSeries(getPeriodoEntrada(di));
+            data.addSeries(getLag(di));
         }
 
     }
@@ -73,10 +77,14 @@ public class EntradaSenoidal extends FuncionTransferencia {
         debug("X(t) = " + di.getAmplitud() + "*sin(" + di.getOmega() + "*t) +" + di.getValor_base());
         for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             //s/me
-            double value = di.getAmplitud() * Math.sin(di.getOmega() * time) + di.getValor_base();
+            double value = getFEntrada(di, time);
             reto.add(time, value);
         }
         return reto;
+    }
+
+    private double getFEntrada(DataInput di, Double time) {
+        return di.getAmplitud() * Math.sin(di.getOmega() * time) + di.getValor_base();
     }
 
     private XYSeries getRespuestaTotal(DataInput di) {
@@ -163,18 +171,18 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel();
-        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad" });
+        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad"});
         double tau = 0.01D;
         for (DataInput di : input_catalog) {
             for (double i = 0.01; i <= 1000; i = i * 10) {
                 debug("tau: " + tau + "iterator: " + i);
-                tmodel.addRow(new Object[]{i, 
-                    (double)Math.round(di.getPhaseLag(i) * 100) / 100, 
-                    convertToMin((double)Math.round(di.getPhaseLag(i) * 100) / 100),
-                    convertToRad((double)Math.round(di.getPhaseLag(i) * 100) / 100)});
+                tmodel.addRow(new Object[]{i,
+                            (double) Math.round(di.getPhaseLag(i) * 100) / 100,
+                            convertToMin((double) Math.round(di.getPhaseLag(i) * 100) / 100),
+                            convertToRad((double) Math.round(di.getPhaseLag(i) * 100) / 100)});
             }
         }
-        tmodel.addRow(new Object[]{"∞","-90"});
+        tmodel.addRow(new Object[]{"∞", "-90"});
         return tmodel;
     }
 
@@ -218,29 +226,112 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     private Object convertToMin(double d) {
-        int intNum = (int)d;
+        int intNum = (int) d;
         double decNum = d - intNum;
         String minAndSec = getMinAndSec(decNum);
-        
-        String min= intNum + "°" + minAndSec;
-        
+
+        String min = intNum + "°" + minAndSec;
+
         return min;
     }
 
     private Object convertToRad(double d) {
         double rad = d * (Math.PI / 180);
-        rad = (double)Math.round(rad * 100) / 100;
+        rad = (double) Math.round(rad * 100) / 100;
         return rad;
     }
 
     private String getMinAndSec(double decNum) {
-        String minAndSec="";
+        String minAndSec = "";
         double minutes = decNum * 60;
-        int min = (int)minutes;
+        int min = (int) minutes;
         double seconds = minutes - min;
-        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
-        minAndSec = min + "' " + seconds + "''" ;
+        seconds = (double) Math.round((seconds * 60) * 100) / 100;;
+        minAndSec = min + "' " + seconds + "''";
         return minAndSec;
+    }
+
+    private XYSeries getPeriodoEntrada(DataInput di) {
+        XYSeries reto = new XYSeries("1 Periodo Entrada");
+        Map<Double, Double> values = new LinkedHashMap<Double, Double>();
+        double beforeValue = 0;
+        boolean estaBajando = false;
+        int puntosFuncion = 0;
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
+            //s/me
+            double currentValue = getFEntrada(di, time);
+            boolean esPico = esPico(currentValue, beforeValue, di.getValor_base());
+            if (esPico && !estaBajando) {
+                values.put(time, currentValue);
+                estaBajando = true;
+                puntosFuncion++;
+            } else if (!esPico) {
+                estaBajando = false;
+            }
+
+            if (puntosFuncion == 2) {
+                //solo queremos una linea
+                break;
+            }
+            beforeValue = currentValue;//sobreescribimos el valor
+
+        }
+        for (Double key : values.keySet()) {
+            Double val = values.get(key);
+            reto.add(key, val);
+        }
+
+        return reto;
+    }
+
+    private boolean esPico(Double currentValue, Double beforeValue, Double trasehold) {
+        return currentValue < beforeValue && currentValue > trasehold;
+    }
+
+    private XYSeries getLag(DataInput di) {
+        XYSeries reto = new XYSeries("Lag");
+        Double[] segundoPicoEntrada = getPico(2, di, 0);
+        Double[] segundoPicoSS = getPico(2, di, 1);
+        reto.add(segundoPicoEntrada[0], segundoPicoEntrada[1]);
+        reto.add(segundoPicoSS[0], segundoPicoEntrada[1]);
+        reto.add(segundoPicoSS[0], segundoPicoSS[1]);
+        
+
+        return reto;
+    }
+
+    private Double[] getPico(int nro, DataInput di, int tipoFuncion) {
+//        Map<Double, Double> values = new LinkedHashMap<Double, Double>();
+        Double[] values = new Double[2];
+        double beforeValue = 0;
+        boolean estaBajando = false;
+        int nroPico = 0;
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
+            //s/me
+            double currentValue = 0;
+            if (tipoFuncion == 0) {
+                currentValue = getFEntrada(di, time);
+            }else if (tipoFuncion == 1){
+                currentValue = getfdet(di, time,false);
+            }
+            boolean esPico = esPico(currentValue, beforeValue, di.getValor_base());
+            if (esPico && !estaBajando) {
+                estaBajando = true;
+                nroPico++;
+            } else if (!esPico) {
+                estaBajando = false;
+            }
+
+            if (nroPico == nro) {
+                //solo queremos una linea
+//                values.put(time, currentValue);
+                values[0] = time;
+                values[1] = currentValue;
+                break;
+            }
+            beforeValue = currentValue;//sobreescribimos el valor
+        }
+        return values;
     }
 
     //otra forma mas elaborada...
