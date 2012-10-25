@@ -220,13 +220,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     private Object convertToMin(double d) {
-        int intNum = (int)d;
-        double decNum = d - intNum;
-        String minAndSec = getMinAndSec(decNum);
-        
-        String min= intNum + "°" + minAndSec;
-        
-        return min;
+        double decNum = (d * Math.PI) / 3600;
+        decNum = (double)Math.round(decNum * 100) / 100;
+        return decNum;  
     }
 
     private Object convertToRad(double d) {
@@ -235,15 +231,15 @@ public class EntradaSenoidal extends FuncionTransferencia {
         return rad;
     }
     
-    private String getMinAndSec(double decNum) {
-        String minAndSec="";
-        double minutes = decNum * 60;
-        int min = (int)minutes;
-        double seconds = minutes - min;
-        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
-        minAndSec = min + "' " + seconds + "''" ;
-        return minAndSec;
-    }
+//    private String getMinAndSec(double decNum) {
+//        String minAndSec="";
+//        double minutes = decNum * 60;
+//        int min = (int)minutes;
+//        double seconds = minutes - min;
+//        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
+//        minAndSec = min + "' " + seconds + "''" ;
+//        return minAndSec;
+//    }
     
 //    private XYSeries getValorMax(DataInput di) {
 //        XYSeries reto = new XYSeries("Valor Maximo");
