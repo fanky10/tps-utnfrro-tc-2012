@@ -61,6 +61,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
             data.addSeries(getRespuestaSS(di));
             data.addSeries(getRespuestaTotal(di));
             data.addSeries(getValorBase(di));
+            //data.addSeries(getValorMax(di));
         }
 
     }
@@ -206,6 +207,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
         debug("CteTiempo: " + di.getTau());
         debug("Amplitud: " + di.getAmplitud());
         debug("Valor Base: " + di.getValor_base());
+        //debug("Valor Maximo: " + di.getValor_max());
         debug("Frecuencia: " + di.getFrecuencia());
         debug("Omega: " + di.getOmega());
         debug("Period: " + di.getPeriodo());
@@ -218,13 +220,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     private Object convertToMin(double d) {
-        int intNum = (int)d;
-        double decNum = d - intNum;
-        String minAndSec = getMinAndSec(decNum);
-        
-        String min= intNum + "°" + minAndSec;
-        
-        return min;
+        double decNum = (d * Math.PI) / 3600;
+        decNum = (double)Math.round(decNum * 100) / 100;
+        return decNum;  
     }
 
     private Object convertToRad(double d) {
@@ -232,16 +230,24 @@ public class EntradaSenoidal extends FuncionTransferencia {
         rad = (double)Math.round(rad * 100) / 100;
         return rad;
     }
-
-    private String getMinAndSec(double decNum) {
-        String minAndSec="";
-        double minutes = decNum * 60;
-        int min = (int)minutes;
-        double seconds = minutes - min;
-        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
-        minAndSec = min + "' " + seconds + "''" ;
-        return minAndSec;
-    }
+    
+//    private String getMinAndSec(double decNum) {
+//        String minAndSec="";
+//        double minutes = decNum * 60;
+//        int min = (int)minutes;
+//        double seconds = minutes - min;
+//        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
+//        minAndSec = min + "' " + seconds + "''" ;
+//        return minAndSec;
+//    }
+    
+//    private XYSeries getValorMax(DataInput di) {
+//        XYSeries reto = new XYSeries("Valor Maximo");
+//        reto.add(0, di.getValor_max());
+//        reto.add(maxTime, di.getValor_max());
+//
+//        return reto;
+//    }
 
     //otra forma mas elaborada...
     /** 
