@@ -234,17 +234,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
         rad = (double) Math.round(rad * 100) / 100;
         return rad;
     }
-
-//    private String getMinAndSec(double decNum) {
-//        String minAndSec = "";
-//        double minutes = decNum * 60;
-//        int min = (int) minutes;
-//        double seconds = minutes - min;
-//        seconds = (double) Math.round((seconds * 60) * 100) / 100;;
-//        minAndSec = min + "' " + seconds + "''";
-//        return minAndSec;
-//    }
-
+    
     private XYSeries getPeriodoEntrada(DataInput di) {
         XYSeries reto = new XYSeries("1 Periodo Entrada");
         Map<Double, Double> values = new LinkedHashMap<Double, Double>();
@@ -295,7 +285,6 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     private Double[] getPico(int nro, DataInput di, int tipoFuncion) {
-//        Map<Double, Double> values = new LinkedHashMap<Double, Double>();
         Double[] values = new Double[2];
         double beforeValue = 0;
         boolean estaBajando = false;
@@ -318,7 +307,6 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
             if (nroPico == nro) {
                 //solo queremos una linea
-//                values.put(time, currentValue);
                 values[0] = time;
                 values[1] = currentValue;
                 break;
