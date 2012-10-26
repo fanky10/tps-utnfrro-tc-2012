@@ -17,21 +17,21 @@ import tdc.gui.entidades.CustomChartPanel;
 import tdc.gui.entidades.DefaultChartModel;
 import tdc.gui.frmTable;
 
-import tdc.primer_orden.entidades.EntradaSenoidalDOS;
+import tdc.primer_orden.entidades.EntradaSenoidal;
 
 /**
  *
  * @author fanky
  */
 public class pnlEntradaSenoidal extends JPanel {
-
+    
     private CustomChartPanel cPanel;
-    private EntradaSenoidalDOS entrada;
+    private EntradaSenoidal entrada;
 
     /** Creates new form pnlEscalon */
     public pnlEntradaSenoidal() {
         initComponents();
-        cPanel = new CustomChartPanel(new DefaultChartModel(EntradaSenoidalDOS.CHART_TITLE, "Tiempo", "Y(t)"));
+        cPanel = new CustomChartPanel(new DefaultChartModel(EntradaSenoidal.CHART_TITLE, "Tiempo", "Y(t)"));
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 
@@ -45,7 +45,7 @@ public class pnlEntradaSenoidal extends JPanel {
         diag.dispose();
         DataInputCatalog data_cat = diag.getDatosIngresados();
 //        EntradaSenoidal.DEBUG = false;
-        entrada = new EntradaSenoidalDOS(data_cat);
+        entrada = new EntradaSenoidal(data_cat);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
 
