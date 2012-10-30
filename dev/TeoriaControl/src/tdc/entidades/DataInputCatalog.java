@@ -6,6 +6,7 @@
 package tdc.entidades;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 
 /**
@@ -19,6 +20,10 @@ public class DataInputCatalog extends ArrayList<DataInput> implements Comparator
             return 0;
         }
         return (o1.getTau()>o2.getTau())?1:-1;
+    }
+    
+    public void autoSort(){
+        Collections.sort(this, this);
     }
 
 }

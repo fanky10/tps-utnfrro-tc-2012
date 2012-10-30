@@ -29,7 +29,7 @@ public class pnlEntradaEscalon extends JPanel {
 
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
-    private DataInputCatalog data_cat;
+    private EntradaEscalonOrdenDosForm dataInputCatalog;
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
@@ -38,17 +38,17 @@ public class pnlEntradaEscalon extends JPanel {
     }
 
     protected void ingresar_datos() {
-        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
+        DiagIngresoEntradaEscalon diag = new DiagIngresoEntradaEscalon(null, true);
         diag.setVisible(true);
         diag.dispose();
-        data_cat = diag.getDatosIngresados();
+        dataInputCatalog = diag.getDatosIngresados();
         refreshDatos();
     }
     private void refreshDatos(){
-        if(data_cat==null){
+        if(dataInputCatalog==null){
             ingresar_datos();
         }
-        entrada = new EntradaEscalon(data_cat,chkVerAmplitud.isSelected());
+        entrada = new EntradaEscalon(dataInputCatalog,chkVerAmplitud.isSelected());
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
 

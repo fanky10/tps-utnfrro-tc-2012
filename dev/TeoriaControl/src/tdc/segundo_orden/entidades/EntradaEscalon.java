@@ -9,7 +9,7 @@ import javax.swing.table.TableCellRenderer;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 import tdc.entidades.DataInput;
-import tdc.entidades.DataInputCatalog;
+
 
 import java.awt.Color;
 import java.util.ArrayList;
@@ -24,6 +24,7 @@ import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
+import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
 import tdc.util.ApplicationConstants;
 
 /**
@@ -33,17 +34,20 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaEscalon extends FuncionTransferencia {
+
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
+    private Double psi;
 
-    public EntradaEscalon(DataInputCatalog input, Boolean dibujarAmplitud) {
+    public EntradaEscalon(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
         super(input);
         this.dibujarAmplitud = dibujarAmplitud;
+        this.psi = input.getPsi();
         init();
     }
 
-    public EntradaEscalon(DataInputCatalog input) {
+    public EntradaEscalon(EntradaEscalonOrdenDosForm input) {
         this(input, true);
     }
 
@@ -53,6 +57,23 @@ public class EntradaEscalon extends FuncionTransferencia {
                 maxTau = di.getTau();
             }
         }
+    }
+
+    @Override
+    protected void createDataset() {
+        data = new XYSeriesCollection();
+        colores = new ArrayList<Color>();
+        for (DataInput di : input_catalog) {
+            data.addSeries(getMainChart(di));
+            colores.add(di.getColor());
+            data.addSeries(getCteTiempo(di));
+            colores.add(Color.black);
+            if (dibujarAmplitud) {
+                data.addSeries(getAmplitud(di));
+                colores.add(Color.black);
+            }
+        }
+
     }
 
     //<editor-fold desc="overriden-methods">
@@ -79,7 +100,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         return tmax - tmin;
     }
 
-        private XYSeries getMainChart(DataInput di) {
+    private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
@@ -109,23 +130,6 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     //</editor-fold>
-    @Override
-    protected void createDataset() {
-        data = new XYSeriesCollection();
-        colores = new ArrayList<Color>();
-        for (DataInput di : input_catalog) {
-            data.addSeries(getMainChart(di));
-            colores.add(di.getColor());
-            data.addSeries(getCteTiempo(di));
-            colores.add(Color.black);
-            if (dibujarAmplitud) {
-                data.addSeries(getAmplitud(di));
-                colores.add(Color.black);
-            }
-        }
-
-    }
-
     protected void createChart() {
         chart = ChartFactory.createXYLineChart(
                 CHART_TITLE, // chart title
