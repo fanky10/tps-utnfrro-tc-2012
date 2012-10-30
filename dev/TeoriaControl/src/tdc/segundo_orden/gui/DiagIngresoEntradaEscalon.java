@@ -11,6 +11,7 @@
 package tdc.segundo_orden.gui;
 
 import java.awt.Color;
+import javax.swing.JOptionPane;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
 
@@ -76,7 +77,13 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         }else{
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
-        data.setPsi(Utilidades.getDouble(txtPsi));
+        Double psi = Utilidades.getDouble(txtPsi); 
+        if(psi<0 && psi<=-1){
+            final String message = "el valor no puede ser menor a -1";
+            JOptionPane.showMessageDialog(this, message);
+            throw new IllegalArgumentException(message);
+        }
+        data.setPsi(psi);
         data.autoSort();
         
         return data;

@@ -78,7 +78,28 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     //<editor-fold desc="overriden-methods">
     protected double getfdet(DataInput di, double time) {
-        return (di.getAmplitud() * (1 - Math.pow(Math.E, (-time / di.getTau()))));
+        if (psi < 1) {
+            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
+            debug("t1First: " + t1First);
+            Double t1Second = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
+            debug("t1Second: " + t1Second);
+            Double secondTerm1 = t1First * t1Second;
+            debug("secondTerm1: " + secondTerm1);
+            debug("-----------------");
+            
+            Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
+            debug("sinFirst: " + sinFirst);
+            Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
+            debug("sinSecond: " + sinSecond);
+            Double secondTerm2 =  Math.sin(sinFirst + sinSecond) ;
+            debug("secondTerm2: " + secondTerm2);
+            
+            return 1 - secondTerm1 * secondTerm2;
+        } else {
+            throw new UnsupportedOperationException("psi < 1 only supported");
+        }
+
+        //return (di.getAmplitud() * (1 - Math.pow(Math.E, (-time / di.getTau()))));
     }
 
     public double getPorcentajeAlgebraico(DataInput di) {
@@ -103,6 +124,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private XYSeries getMainChart(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
+        debug("psi: " + psi);
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time);
