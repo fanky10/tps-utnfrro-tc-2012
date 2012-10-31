@@ -78,46 +78,47 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     //<editor-fold desc="overriden-methods">
     protected double getfdet(DataInput di, double time) {
+        Double result = 0D;
         if (psi < 1) {
             Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
             debug("t1First: " + t1First);
-            Double t1Second = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
+            Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             debug("t1Second: " + t1Second);
             Double secondTerm1 = t1First * t1Second;
             debug("secondTerm1: " + secondTerm1);
             debug("-----------------");
-            
+
             Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
             debug("sinFirst: " + sinFirst);
             Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
             debug("sinSecond: " + sinSecond);
-            Double secondTerm2 =  Math.sin(sinFirst + sinSecond) ;
+            Double secondTerm2 = Math.sin(sinFirst + sinSecond);
             debug("secondTerm2: " + secondTerm2);
-            
-            return 1 - secondTerm1 * secondTerm2;
-        } else if( psi == 1 ) {
+
+            result = 1 - secondTerm1 * secondTerm2;
+        } else if (psi == 1) {
             Double t1First = 1 + time / di.getTau();
             debug("t1First: " + t1First);
-            Double t1Second = Math.pow(Math.E,(-time / di.getTau()));
+            Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
             debug("t1Second: " + t1Second);
             debug("-----------------");
-            
-            return 1 - t1First * t1Second;
-            
+
+            result = 1 - t1First * t1Second;
+
         } else {
-            Double t1First = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
+            Double t1First = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             debug("t1First: " + t1First);
-            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2))-1) * (time / di.getTau());
+            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2)) - 1) * (time / di.getTau());
             debug("coshFirst: " + coshFirst);
-            Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2))-1);
+            Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2)) - 1);
             debug("t1Second: " + t1Second);
-            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2))-1) * (time/di.getTau());
+            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2)) - 1) * (time / di.getTau());
             debug("sinhFirst: " + sinhFirst);
             debug("-----------------");
-            
-            return 1 - t1First *  ( coshFirst + t1Second * sinhFirst);
-        }
 
+            result = 1 - t1First * (coshFirst + t1Second * sinhFirst);
+        }
+        return di.getAmplitud() * result;
         //return (di.getAmplitud() * (1 - Math.pow(Math.E, (-time / di.getTau()))));
     }
 
