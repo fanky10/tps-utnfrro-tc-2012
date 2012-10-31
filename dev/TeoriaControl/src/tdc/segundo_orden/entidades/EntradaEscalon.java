@@ -107,15 +107,15 @@ public class EntradaEscalon extends FuncionTransferencia {
         } else {
             Double t1First = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
             debug("t1First: " + t1First);
-            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2))-1);
+            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2))-1) * (time / di.getTau());
             debug("coshFirst: " + coshFirst);
-            Double t1Second = time / di.getTau() + psi / (Math.sqrt(Math.pow(psi, 2))-1);
+            Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2))-1);
             debug("t1Second: " + t1Second);
-            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2))-1) * (time/psi);
-            debug("sinhFirst: " + coshFirst);
+            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2))-1) * (time/di.getTau());
+            debug("sinhFirst: " + sinhFirst);
             debug("-----------------");
             
-            return 1 - t1First *  ( coshFirst * t1Second * sinhFirst);
+            return 1 - t1First *  ( coshFirst + t1Second * sinhFirst);
         }
 
         //return (di.getAmplitud() * (1 - Math.pow(Math.E, (-time / di.getTau()))));
