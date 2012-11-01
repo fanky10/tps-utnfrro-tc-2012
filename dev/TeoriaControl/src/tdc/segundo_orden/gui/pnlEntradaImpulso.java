@@ -14,12 +14,10 @@ import java.awt.BorderLayout;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import tdc.Configuracion;
-import tdc.entidades.DataInputCatalog;
 import tdc.gui.entidades.CustomChartPanel;
 import tdc.gui.entidades.DefaultChartModel;
 import tdc.gui.frmTable;
 import tdc.segundo_orden.entidades.EntradaImpulso;
-
 
 /**
  *
@@ -30,7 +28,7 @@ public class pnlEntradaImpulso extends JPanel {
     private CustomChartPanel cPanel;
     private EntradaImpulso entrada;
     private EntradaEscalonOrdenDosForm dataInputCatalog;
-    
+
     /** Creates new form pnlEscalon */
     public pnlEntradaImpulso() {
         initComponents();
@@ -38,15 +36,7 @@ public class pnlEntradaImpulso extends JPanel {
         pnlGrafico.add(cPanel, BorderLayout.CENTER);
     }
 
-    /**
-     * 0.1 ver si actualiza el panel
-     * 0.2 generar chart y actualizar el panel
-     */
     protected void ingresar_datos() {
-        //v0.1
-//        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
-//        cPanel.setModel(new DefaultChartModel(message,"x","y"));
-        //v0.2
         DiagIngresoEntradaEscalon diag = new DiagIngresoEntradaEscalon(null, true);
         diag.setVisible(true);
         diag.dispose();
@@ -138,35 +128,15 @@ public class pnlEntradaImpulso extends JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel pnlGrafico;
     // End of variables declaration//GEN-END:variables
-    // Variables declaration - do not modify                     
-    private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JCheckBox chkVerAmplitud;
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JPanel jPanel1;
-    
-    
+
     private void refreshDatos() {
-        if(dataInputCatalog==null){
+        if (dataInputCatalog == null) {
             ingresar_datos();
         }
-        entrada = new EntradaImpulso(dataInputCatalog,chkVerAmplitud.isSelected());
+        entrada = new EntradaImpulso(dataInputCatalog);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
 
     }
-    
-    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        ingresar_datos();
-    }                                        
-
-    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
-        ver_tabla();
-    }                                        
-
-    private void chkVerAmplitudActionPerformed(java.awt.event.ActionEvent evt) {                                               
-        refreshDatos();
-    }                                              
-
 
     public static void main(String args[]) {
         JFrame frmMain = new JFrame("TeoriaDeControl " + Configuracion.getVersion());
