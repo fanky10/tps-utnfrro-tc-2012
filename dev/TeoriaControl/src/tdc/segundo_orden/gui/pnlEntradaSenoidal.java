@@ -43,8 +43,7 @@ public class pnlEntradaSenoidal extends JPanel {
         diagIngresoSenoidal diag = new diagIngresoSenoidal(null, true);
         diag.setVisible(true);
         diag.dispose();
-        DataInputCatalog data_cat = diag.getDatosIngresados();
-//        EntradaSenoidal.DEBUG = false;
+        EntradaSenoidalOrdenDosForm data_cat = diag.getDatosIngresados();
         entrada = new EntradaSenoidal(data_cat);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }

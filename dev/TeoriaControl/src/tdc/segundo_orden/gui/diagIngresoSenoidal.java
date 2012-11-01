@@ -37,10 +37,11 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         Utilidades.setDouble(txtCteTiempo,2);
         
     }
-    public DataInputCatalog getDatosIngresados(){
-        DataInputCatalog data = new DataInputCatalog();
+    public EntradaSenoidalOrdenDosForm getDatosIngresados(){
+        EntradaSenoidalOrdenDosForm data = new EntradaSenoidalOrdenDosForm();
         data.add(new DataInput("Datos1", Utilidades.getDouble(txtAmplitud), Utilidades.getDouble(txtCteTiempo), Utilidades.getDouble(txtValorBase), Utilidades.getDouble(txtFrecuencia),Color.red));
-        Collections.sort(data,data);
+        data.setPsi(Utilidades.getDouble(txtPsi));
+        data.autoSort();
         return data;
     }
     
@@ -64,6 +65,8 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         txtFrecuencia = new javax.swing.JTextField();
         jLabel5 = new javax.swing.JLabel();
         txtCteTiempo = new javax.swing.JTextField();
+        jLabel6 = new javax.swing.JLabel();
+        txtPsi = new javax.swing.JTextField();
         jPanel2 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
 
@@ -117,6 +120,10 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
             }
         });
         jPanel1.add(txtCteTiempo);
+
+        jLabel6.setText("Psi");
+        jPanel1.add(jLabel6);
+        jPanel1.add(txtPsi);
 
         jButton1.setText("Generar");
         jButton1.addActionListener(new java.awt.event.ActionListener() {
@@ -184,11 +191,13 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel5;
+    private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JTextField txtAmplitud;
     private javax.swing.JTextField txtCteTiempo;
     private javax.swing.JTextField txtFrecuencia;
+    private javax.swing.JTextField txtPsi;
     private javax.swing.JTextField txtValorBase;
     // End of variables declaration//GEN-END:variables
 

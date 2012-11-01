@@ -11,7 +11,7 @@ import tdc.entidades.DataInputCatalog;
  *
  * @author Fanky10 <fanky10@gmail.com>
  */
-public class EntradaEscalonOrdenDosForm extends DataInputCatalog {
+public class EntradaSenoidalOrdenDosForm extends DataInputCatalog {
 
     private Double psi;
 

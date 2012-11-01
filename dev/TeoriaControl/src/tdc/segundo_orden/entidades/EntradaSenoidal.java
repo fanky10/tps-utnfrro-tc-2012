@@ -24,8 +24,8 @@ import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
 import tdc.entidades.DataInput;
-import tdc.entidades.DataInputCatalog;
 import tdc.entidades.FuncionTransferencia;
+import tdc.segundo_orden.gui.EntradaSenoidalOrdenDosForm;
 
 /**
  *
@@ -37,9 +37,10 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Senoidal";
     private double maxTime = 0D;
-
-    public EntradaSenoidal(DataInputCatalog input) {
+    private double psi = 0D;
+    public EntradaSenoidal(EntradaSenoidalOrdenDosForm input) {
         super(input);
+        psi = input.getPsi();
         init();
     }
 
@@ -185,22 +186,16 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     protected double getfdet(DataInput di, double time, boolean rtaTotal) {
-        double result = 0;
-        if (rtaTotal) {
-            result = di.getValor_base() + getFirstTerm(di, time) + getSecondTerm(di, time);
-        } else {
-            result = di.getValor_base() + getSecondTerm(di, time);
-        }
-        return result;
+        double sqrtOne = Math.pow((1-Math.pow(di.getOmega()*di.getTau(), 2)),2);
+        double sqrtTwo = Math.pow(2*psi*di.getOmega()*di.getTau(), 2);
+        double result = 1 / Math.sqrt(sqrtOne+sqrtTwo) * Math.sin(di.getOmega()*di.getTau() + getPhaseLag(di));
+        return di.getAmplitud() * result;
 
     }
-
-    private double getFirstTerm(DataInput di, double time) {
-        return ((di.getAmplitud() * di.getOmega() * di.getTau()) / (Math.pow(di.getTau(), 2) * Math.pow(di.getOmega(), 2) + 1)) * Math.pow(Math.E, (-time / di.getTau()));
-    }
-
-    private double getSecondTerm(DataInput di, double time) {
-        return (di.getAmplitud() / Math.sqrt(Math.pow(di.getTau(), 2) * Math.pow(di.getOmega(), 2) + 1)) * Math.sin(di.getOmega() * time + di.getPhaseLag());
+    private double getPhaseLag(DataInput di){
+        double nomin = 2*psi*di.getOmega()*di.getTau();
+        double denomin = 1 - Math.pow(di.getOmega()*di.getTau(), 2);
+        return -Math.atan(nomin/denomin);
     }
 
     private void showVars(DataInput di) {
