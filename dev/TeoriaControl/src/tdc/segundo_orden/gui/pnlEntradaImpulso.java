@@ -11,7 +11,9 @@
 package tdc.segundo_orden.gui;
 
 import java.awt.BorderLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import tdc.Configuracion;
 import tdc.entidades.DataInputCatalog;
 import tdc.gui.entidades.CustomChartPanel;
 import tdc.gui.entidades.DefaultChartModel;
@@ -27,7 +29,8 @@ public class pnlEntradaImpulso extends JPanel {
 
     private CustomChartPanel cPanel;
     private EntradaImpulso entrada;
-
+    private EntradaEscalonOrdenDosForm dataInputCatalog;
+    
     /** Creates new form pnlEscalon */
     public pnlEntradaImpulso() {
         initComponents();
@@ -44,12 +47,12 @@ public class pnlEntradaImpulso extends JPanel {
 //        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
 //        cPanel.setModel(new DefaultChartModel(message,"x","y"));
         //v0.2
-        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
+        DiagIngresoEntradaEscalon diag = new DiagIngresoEntradaEscalon(null, true);
         diag.setVisible(true);
         diag.dispose();
-        DataInputCatalog data_cat = diag.getDatosIngresados();
-        entrada = new EntradaImpulso(data_cat);
-        cPanel.setModel(new DefaultChartModel(entrada.getChart()));
+        dataInputCatalog = diag.getDatosIngresados();
+        refreshDatos();
+
     }
 
     protected void ver_tabla() {
@@ -135,4 +138,43 @@ public class pnlEntradaImpulso extends JPanel {
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel pnlGrafico;
     // End of variables declaration//GEN-END:variables
+    // Variables declaration - do not modify                     
+    private javax.swing.ButtonGroup buttonGroup1;
+    private javax.swing.JCheckBox chkVerAmplitud;
+    private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JPanel jPanel1;
+    
+    
+    private void refreshDatos() {
+        if(dataInputCatalog==null){
+            ingresar_datos();
+        }
+        entrada = new EntradaImpulso(dataInputCatalog,chkVerAmplitud.isSelected());
+        cPanel.setModel(new DefaultChartModel(entrada.getChart()));
+
+    }
+    
+    private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        ingresar_datos();
+    }                                        
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {                                         
+        ver_tabla();
+    }                                        
+
+    private void chkVerAmplitudActionPerformed(java.awt.event.ActionEvent evt) {                                               
+        refreshDatos();
+    }                                              
+
+
+    public static void main(String args[]) {
+        JFrame frmMain = new JFrame("TeoriaDeControl " + Configuracion.getVersion());
+        frmMain.getContentPane().add(new pnlEntradaEscalon());
+        frmMain.setLocationRelativeTo(null);
+        frmMain.pack();
+        frmMain.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmMain.setVisible(true);
+    }
 }

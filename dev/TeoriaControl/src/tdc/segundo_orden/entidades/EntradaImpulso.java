@@ -4,6 +4,8 @@
  */
 package tdc.segundo_orden.entidades;
 
+import java.awt.Color;
+import java.util.ArrayList;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jfree.chart.ChartFactory;
@@ -13,11 +15,12 @@ import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
-import tdc.entidades.DataInputCatalog;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
+import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
 import tdc.util.ApplicationConstants;
 
 /**
@@ -27,14 +30,21 @@ import tdc.util.ApplicationConstants;
 public class EntradaImpulso extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
+    private Boolean dibujarAmplitud = true;
+    private Double psi;
 
-    public EntradaImpulso(DataInputCatalog input) {
+    public EntradaImpulso(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
         super(input);
+        this.dibujarAmplitud = dibujarAmplitud;
+        this.psi = input.getPsi();
         init();
     }
 
-    private void init() {
+    public EntradaImpulso(EntradaEscalonOrdenDosForm input) {
+        this(input, true);
+    }
 
+    private void init() {
         for (DataInput di : input_catalog) {
             if (maxTau < di.getTau()) {
                 maxTau = di.getTau();
@@ -43,79 +53,49 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     @Override
-    public void createDataset() {
+    protected void createDataset() {
+        data = new XYSeriesCollection();
+        colores = new ArrayList<Color>();
         for (DataInput di : input_catalog) {
             data.addSeries(getMainChart(di));
+            colores.add(di.getColor());
             data.addSeries(getCteTiempo(di));
+            colores.add(Color.black);
+            if (dibujarAmplitud) {
+                data.addSeries(getAmplitud(di));
+                colores.add(Color.black);
+            }
         }
-    }
 
-    @Override
-    public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Asentamiento"}, 0);
-        for (DataInput di : input_catalog) {
-            tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
-                    });
-        }
-        return tmodel;
-    }
-
-    private Double getTiempoAsentamiento(DataInput di) {
-        return DataInput.NCTE_TAU_TABLA * di.getTau();
-    }
-
-    public double getPorcentajeTabla(DataInput di) {
-        double one_tau = getfdet(di, di.getTau());
-        return one_tau / di.getAmplitud();
-    }
-
-    private XYSeries getMainChart(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel());
-        debug("generating Graphic di.getTau(): " + di.getTau() + " di.getAmplitud(): " + di.getAmplitud());
-        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
-            //valor de Y(t)
-            double value = getfdet(di, time);
-            debug("Y(" + time + ") generado: " + value);
-            reto.add(time, value);
-        }
-        return reto;
-    }
-
-    private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
-        //el valor de y(t) cuando t=1di.getTau()
-        double value = getfdet(di, di.getTau());
-//        debug("============================================");
-//        debug("generating cte tiempo "+value);
-        reto.add(0, value);
-        reto.add(di.getTau(), value);
-        reto.add(di.getTau(), 0);
-        return reto;
-    }
-
-    public double getPorcentajeAlgebraico(DataInput di) {
-        return 2.2D * di.getTau();
-    }
-
-    public double getTiempoSubida(DataInput di) {
-        debug("---------------TIEMPO DE SUBIDA--------------");
-        double tmin = 0d;//al 10% de la di.getAmplitud()
-        double tmax = 0d;//al 90% de la di.getAmplitud()
-        //buscamos el tmin
-        debug("--tmin seek");
-        double ytmin = di.getAmplitud() * 0.1;
-        double ytmax = di.getAmplitud() * 0.9;
-        tmin = di.getTau() * Math.log(di.getTau() * ytmin);
-        debug("tmin found! " + tmin);
-        tmax = di.getTau() * Math.log(di.getTau() * ytmax);
-        debug("tmax found! " + tmax);
-        return tmax - tmin;
     }
 
     @Override
     protected double getfdet(DataInput di, double time) {
-        return (di.getAmplitud() / di.getTau()) * Math.pow(Math.E, (-time / di.getTau()));
+        
+        if (psi < 1) {
+            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2) * di.getTau()));
+            debug("t1First: " + t1First);
+            Double t1Second = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
+            debug("t1Second: " + t1Second);
+            Double secondTerm1 = t1First * t1Second;
+            debug("secondTerm1: " + secondTerm1);
+            Double sinFirst = Math.sin(Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau());
+            debug("sinFirst: " + sinFirst);
+            
+            return t1First * t1Second * sinFirst;
+        
+        } else if( psi == 1 ) {
+            
+            return 1;
+            
+        } else {
+            return 1; 
+        }
+
+    }
+    
+    public double getPorcentajeAlgebraico(DataInput di) {
+        return 2.2D * di.getTau();
     }
 
     @Override
@@ -151,4 +131,52 @@ public class EntradaImpulso extends FuncionTransferencia {
     public TableCellRenderer createTableRenderer() {
         return new MyColorCellRenderer(input_catalog);
     }
+
+    private XYSeries getMainChart(DataInput di) {
+         XYSeries reto = new XYSeries(di.getLabel());
+        debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
+        debug("psi: " + psi);
+        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+            //valor de Y(t)
+            double value = getfdet(di, time);
+            debug("Y(" + time + ") generado: " + value);
+            reto.add(time, value);
+        }
+        return reto;
+    }
+
+    private XYSeries getCteTiempo(DataInput di) {
+        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
+        double value = getfdet(di, di.getTau());
+        reto.add(0, value);
+        reto.add(di.getTau(), value);
+        reto.add(di.getTau(), 0);
+        return reto;
+    }
+
+    private XYSeries getAmplitud(DataInput di) {
+        XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
+        Number numberTau = DataInput.NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, di.getAmplitud());
+        reto.add(numberTau, di.getAmplitud());
+        return reto;
+    }
+
+    @Override
+    public DefaultTableModel createTableModel() {
+        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
+        for (DataInput di : input_catalog) {
+            tmodel.addRow(new Object[]{di.getLabel(),
+                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
+                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
+                    });
+        }
+        return tmodel;
+    }
+    
+    
+    private Double getTiempoAsentamiento(DataInput di) {
+        return DataInput.NCTE_TAU_TABLA * di.getTau();
+    }    
+    
 }
