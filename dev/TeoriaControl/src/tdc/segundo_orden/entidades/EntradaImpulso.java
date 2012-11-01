@@ -28,6 +28,7 @@ import tdc.util.ApplicationConstants;
  * @author fanky
  */
 public class EntradaImpulso extends FuncionTransferencia {
+
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
@@ -60,38 +61,38 @@ public class EntradaImpulso extends FuncionTransferencia {
             data.addSeries(getMainChart(di));
             colores.add(di.getColor());
             data.addSeries(getCteTiempo(di));
-            colores.add(Color.black);
-            if (dibujarAmplitud) {
-                data.addSeries(getAmplitud(di));
-                colores.add(Color.black);
-            }
+//            colores.add(Color.black);
+//            if (dibujarAmplitud) {
+//                data.addSeries(getAmplitud(di));
+//                colores.add(Color.black);
+//            }
         }
 
     }
 
     @Override
     protected double getfdet(DataInput di, double time) {
-        
+        Double result = 0D;
         if (psi < 1) {
-            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2) * di.getTau()));
+            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)) * di.getTau());
             debug("t1First: " + t1First);
-            Double t1Second = Math.pow(Math.E, ((-psi * time )/ di.getTau()));
+            Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             debug("t1Second: " + t1Second);
             Double secondTerm1 = t1First * t1Second;
             debug("secondTerm1: " + secondTerm1);
             Double sinFirst = Math.sin(Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau());
             debug("sinFirst: " + sinFirst);
-            
-            return t1First * t1Second * sinFirst;
-        
-        } else if( psi == 1 ) {
-            Double t1First = ( 1 / Math.pow(di.getTau(), 2)) * time;
+
+            result = t1First * t1Second * sinFirst;
+
+        } else if (psi == 1) {
+            Double t1First = (1 / Math.pow(di.getTau(), 2)) * time;
             debug("t1First: " + t1First);
             Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
             debug("t1Sdecond: " + t1Second);
-            
-            return t1First * t1Second;
-        
+
+            result = t1First * t1Second;
+
         } else {
             Double t1First = time / Math.pow(di.getTau(), 2);
             debug("t1First: " + t1First);
@@ -101,13 +102,14 @@ public class EntradaImpulso extends FuncionTransferencia {
             debug("t1Third: " + t1Third);
             Double sinFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1));
             debug("sinFirst: " + sinFirst);
-            
-            return t1First * t1Second * t1Third * sinFirst;
-            
+
+            result = t1First * t1Second * t1Third * sinFirst;
+
         }
+        return result;
 
     }
-    
+
     public double getPorcentajeAlgebraico(DataInput di) {
         return 2.2D * di.getTau();
     }
@@ -147,7 +149,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getMainChart(DataInput di) {
-         XYSeries reto = new XYSeries(di.getLabel());
+        XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
@@ -187,10 +189,8 @@ public class EntradaImpulso extends FuncionTransferencia {
         }
         return tmodel;
     }
-    
-    
+
     private Double getTiempoAsentamiento(DataInput di) {
         return DataInput.NCTE_TAU_TABLA * di.getTau();
-    }    
-    
+    }
 }
