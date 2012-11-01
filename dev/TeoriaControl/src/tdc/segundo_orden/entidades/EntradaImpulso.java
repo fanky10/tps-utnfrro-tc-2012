@@ -85,11 +85,25 @@ public class EntradaImpulso extends FuncionTransferencia {
             return t1First * t1Second * sinFirst;
         
         } else if( psi == 1 ) {
+            Double t1First = ( 1 / Math.pow(di.getTau(), 2)) * time;
+            debug("t1First: " + t1First);
+            Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
+            debug("t1Sdecond: " + t1Second);
             
-            return 1;
-            
+            return t1First * t1Second;
+        
         } else {
-            return 1; 
+            Double t1First = time / Math.pow(di.getTau(), 2);
+            debug("t1First: " + t1First);
+            Double t1Second = 1 / Math.sqrt(Math.pow(psi, 2) - 1);
+            debug("t1Second: " + t1Second);
+            Double t1Third = Math.pow(Math.E, (-psi * time / di.getTau()));
+            debug("t1Third: " + t1Third);
+            Double sinFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1));
+            debug("sinFirst: " + sinFirst);
+            
+            return t1First * t1Second * t1Third * sinFirst;
+            
         }
 
     }
