@@ -4,6 +4,7 @@
  */
 package tdc.segundo_orden.entidades;
 
+import java.awt.BasicStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jfree.data.xy.XYSeries;
@@ -12,6 +13,7 @@ import tdc.entidades.DataInput;
 
 
 import java.awt.Color;
+import java.awt.Stroke;
 import java.util.ArrayList;
 
 import java.util.LinkedHashMap;
@@ -28,6 +30,7 @@ import org.jfree.chart.title.LegendTitle;
 import org.jfree.ui.RectangleEdge;
 import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
+import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
 
@@ -43,6 +46,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private List<Double> psiList = new ArrayList<Double>();
+    private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
 
     public EntradaEscalon(EntradaEscalonOrdenDosForm input) {
         super(input);
@@ -61,13 +65,29 @@ public class EntradaEscalon extends FuncionTransferencia {
     @Override
     protected void createDataset() {
         data = new XYSeriesCollection();
-        colores = new ArrayList<Color>();
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
                 data.addSeries(getMainChart(di, psi));
-                data.addSeries(getAmplitud(di));
+
             }
         }
+        // el parametro de amplitud con otro tipo de stroke (:
+        Stroke dashedStroke = new BasicStroke(
+                1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                1.0f, new float[]{6.0f, 6.0f}, 0.0f);
+        Linea linea = new Linea(Color.black, dashedStroke);
+
+        XYSeries serie = getAmplitud(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
+
+        serie = getBandaSuperior(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
+
+        serie = getBandaInferior(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
 
     }
 
@@ -153,10 +173,28 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getAmplitud(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
+        XYSeries reto = new XYSeries("Amplitud");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, di.getAmplitud());
         reto.add(numberTau, di.getAmplitud());
+        return reto;
+    }
+
+    private XYSeries getBandaSuperior(DataInput di) {
+        Double banda = di.getAmplitud() * (1 + 0.05);
+        XYSeries reto = new XYSeries("Banda superior");
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, banda);
+        reto.add(numberTau, banda);
+        return reto;
+    }
+
+    private XYSeries getBandaInferior(DataInput di) {
+        Double banda = di.getAmplitud() * (1 - 0.05);
+        XYSeries reto = new XYSeries("Banda inferior");
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, banda);
+        reto.add(numberTau, banda);
         return reto;
     }
 
@@ -177,8 +215,10 @@ public class EntradaEscalon extends FuncionTransferencia {
         XYPlot plot = chart.getXYPlot();
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
         // set the color for each series
-        for (int i = 0; i < colores.size(); i++) {
-            renderer.setSeriesPaint(i, colores.get(i));
+        for (XYSeries key : lineasMap.keySet()) {
+            int idx = data.indexOf(key);
+            renderer.setSeriesPaint(idx, lineasMap.get(key).getColor());
+            renderer.setSeriesStroke(idx, lineasMap.get(key).getStroke());
         }
         plot.setRenderer(renderer);
         //percentage (rangeAxis)
@@ -207,7 +247,7 @@ public class EntradaEscalon extends FuncionTransferencia {
             }
             tmodel = new DefaultTableModel(header.toArray(new String[0]), 0);
             Map<String, List<String>> terminos = getTerminos(input_catalog.get(0).getTau(), psiList);
-            for(String key :terminos.keySet()){
+            for (String key : terminos.keySet()) {
                 List<String> values = terminos.get(key);
                 List<String> row = new ArrayList<String>();
                 row.add(key.toString());
@@ -224,13 +264,13 @@ public class EntradaEscalon extends FuncionTransferencia {
         Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
         List<String> overshootValues = new ArrayList<String>();
         List<String> decayRatioValues = new ArrayList<String>();
-        for(Double psi: psiList){
+        for (Double psi : psiList) {
             //add overshoot
-            if(psi<1){
+            if (psi < 1) {
                 Double overshoot = getOvershoot(psi);
                 overshootValues.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
                 decayRatioValues.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
-            }else{
+            } else {
                 overshootValues.add("-");
                 decayRatioValues.add("-");
             }
@@ -239,21 +279,26 @@ public class EntradaEscalon extends FuncionTransferencia {
         result.put("DecayRatio", decayRatioValues);
         return result;
     }
-    private Double getOvershoot(Double psi){
-        Double exp = -(Math.PI*psi)/(Math.sqrt(1-Math.pow(psi, 2)));
+
+    private Double getOvershoot(Double psi) {
+        Double exp = -(Math.PI * psi) / (Math.sqrt(1 - Math.pow(psi, 2)));
         return Math.pow(Math.E, exp);
-        
+
     }
-    private Double getDecayRatio(Double overshoot){
+
+    private Double getDecayRatio(Double overshoot) {
         return Math.pow(overshoot, 2);
     }
-    private Double getRiseTime(){
+
+    private Double getRiseTime() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    private Double getResponseTime(){
+
+    private Double getResponseTime() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    private Double getPeriodOscilation(){
+
+    private Double getPeriodOscilation() {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

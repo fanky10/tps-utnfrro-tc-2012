@@ -63,7 +63,7 @@ public abstract class FuncionTransferencia {
     
     
     //<editor-fold desc="debug">
-    public static boolean DEBUG=true;
+    public static boolean DEBUG=false;
     protected static void debug(String text){
         if(DEBUG){
             System.out.println("DEBUG: "+text);
