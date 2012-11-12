@@ -11,6 +11,7 @@
 package tdc.segundo_orden.gui;
 
 import java.awt.Color;
+import java.util.ArrayList;
 import javax.swing.JOptionPane;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
@@ -32,23 +33,23 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
     }
     
     private void defaultValues(){
-        Utilidades.setDouble(txtCtei1,1D);
-        Utilidades.setDouble(txtCtei2,2D);
-        Utilidades.setDouble(txtCtei3,3D);
-        Utilidades.setDouble(txtCtei4,4D);
-        Utilidades.setDouble(txtCtei5,5D);
-        Utilidades.setDouble(txtCtej1,7D);
-        Utilidades.setDouble(txtPsi,-1D);
+        Utilidades.setDouble(txtCtei1,0.2D);
+        Utilidades.setDouble(txtCtei2,0.4D);
+        Utilidades.setDouble(txtCtei3,0.8D);
+        Utilidades.setDouble(txtCtei4,1.2D);
+        Utilidades.setDouble(txtCtei5,1.4D);
+        Utilidades.setDouble(txtCtej1,0.1D);
+        Utilidades.setDouble(txtAmplitud,1D);
 
     }
     
     private void cambia_label(){
         if(rb5a1t.isSelected()){
-            lbl5Var.setText("Ingrese AMPLITUDES");
+            lbl5Var.setText("Ingrese Psi");
             lbl1Var.setText("Ingrese Constante de TIEMPO");
         }else if(rb5t1a.isSelected()){
             lbl5Var.setText("Ingrese Constantes de TIEMPO");
-            lbl1Var.setText("Ingrese AMPLITUD");
+            lbl1Var.setText("Ingrese Psi");
         }else{
             throw new IllegalArgumentException("no possible radiobutton selected!");
         }
@@ -61,29 +62,38 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         double var3 = Utilidades.getDouble(txtCtei3);
         double var4 = Utilidades.getDouble(txtCtei4);
         double var5 = Utilidades.getDouble(txtCtei5);
+        
         double var6 = Utilidades.getDouble(txtCtej1);
+        
+        double amplitud = Utilidades.getDouble(txtAmplitud);
+        java.util.List<Double> psiV = new ArrayList<Double>();
         if(rb5a1t.isSelected()){
-            data.add(new DataInput("Datos1",var1,var6,Color.red));
-            data.add(new DataInput("Datos2",var2,var6,Color.blue));
-            data.add(new DataInput("Datos3",var3,var6,Color.green));
-            data.add(new DataInput("Datos4",var4,var6,Color.orange));
-            data.add(new DataInput("Datos5",var5,var6,Color.yellow));
+            //todo: VALIDAR VALOR DE PSI
+            
+            psiV.add(var1);
+            psiV.add(var2);
+            psiV.add(var3);
+            psiV.add(var4);
+            psiV.add(var5);
+            data.add(new DataInput("Datos1",amplitud,var6,Color.red));
         }else if(rb5t1a.isSelected()){
-            data.add(new DataInput("Datos1",var6,var1,Color.red));
-            data.add(new DataInput("Datos2",var6,var2,Color.blue));
-            data.add(new DataInput("Datos3",var6,var3,Color.green));
-            data.add(new DataInput("Datos4",var6,var4,Color.orange));
-            data.add(new DataInput("Datos5",var6,var5,Color.yellow));
+            psiV.add(var6);
+            data.add(new DataInput("Datos1",amplitud,var1,Color.red));
+            data.add(new DataInput("Datos2",amplitud,var2,Color.blue));
+            data.add(new DataInput("Datos3",amplitud,var3,Color.green));
+            data.add(new DataInput("Datos4",amplitud,var4,Color.orange));
+            data.add(new DataInput("Datos5",amplitud,var5,Color.yellow));
         }else{
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
-        Double psi = Utilidades.getDouble(txtPsi); 
-        if(psi<0 && psi<=-1){
-            final String message = "el valor no puede ser menor a -1";
-            JOptionPane.showMessageDialog(this, message);
-            throw new IllegalArgumentException(message);
-        }
-        data.setPsi(psi);
+        data.setPsi(psiV);
+//        Double psi = Utilidades.getDouble(txtPsi); 
+//        if(psi<0 && psi<=-1){
+//            final String message = "el valor no puede ser menor a -1";
+//            JOptionPane.showMessageDialog(this, message);
+//            throw new IllegalArgumentException(message);
+//        }
+//        data.setPsi(psi);
         data.autoSort();
         
         return data;
@@ -114,7 +124,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         rb5t1a = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
-        txtPsi = new javax.swing.JTextField();
+        txtAmplitud = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -193,7 +203,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         jPanel2.setBorder(javax.swing.BorderFactory.createEtchedBorder());
 
         buttonGroup1.add(rb5a1t);
-        rb5a1t.setText("5Amp - 1Tiempo");
+        rb5a1t.setText("5Psi - 1Tiempo");
         rb5a1t.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rb5a1tActionPerformed(evt);
@@ -202,7 +212,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         jPanel2.add(rb5a1t);
 
         buttonGroup1.add(rb5t1a);
-        rb5t1a.setText("5Tiempo - 1Amp");
+        rb5t1a.setText("5Tiempo - 1Psi");
         rb5t1a.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rb5t1aActionPerformed(evt);
@@ -218,9 +228,9 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         });
         jPanel2.add(jButton1);
 
-        jLabel3.setText("Psi");
+        jLabel3.setText("Amplitud");
 
-        txtPsi.setText("Psi");
+        txtAmplitud.setText("Psi");
 
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -239,7 +249,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
                         .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .addContainerGap()
-                        .add(txtPsi, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                        .add(txtAmplitud, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(24, 24, 24)
                         .add(lbl1Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)))
@@ -256,7 +266,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jLabel3)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
-                .add(txtPsi, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .add(txtAmplitud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -355,12 +365,12 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
     private javax.swing.JLabel lbl5Var;
     private javax.swing.JRadioButton rb5a1t;
     private javax.swing.JRadioButton rb5t1a;
+    private javax.swing.JTextField txtAmplitud;
     private javax.swing.JTextField txtCtei1;
     private javax.swing.JTextField txtCtei2;
     private javax.swing.JTextField txtCtei3;
     private javax.swing.JTextField txtCtei4;
     private javax.swing.JTextField txtCtei5;
     private javax.swing.JTextField txtCtej1;
-    private javax.swing.JTextField txtPsi;
     // End of variables declaration//GEN-END:variables
 }

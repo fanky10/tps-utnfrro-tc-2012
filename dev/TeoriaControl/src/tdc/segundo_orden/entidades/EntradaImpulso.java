@@ -32,12 +32,12 @@ public class EntradaImpulso extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
-    private Double psi;
+    private java.util.List<Double> psiList = new ArrayList<Double>();
 
     public EntradaImpulso(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
         super(input);
         this.dibujarAmplitud = dibujarAmplitud;
-        this.psi = input.getPsi();
+        this.psiList = input.getPsi();
         init();
     }
 
@@ -57,21 +57,21 @@ public class EntradaImpulso extends FuncionTransferencia {
     protected void createDataset() {
         data = new XYSeriesCollection();
         colores = new ArrayList<Color>();
-        for (DataInput di : input_catalog) {
-            data.addSeries(getMainChart(di));
-            colores.add(di.getColor());
-            data.addSeries(getCteTiempo(di));
-//            colores.add(Color.black);
-//            if (dibujarAmplitud) {
-//                data.addSeries(getAmplitud(di));
-//                colores.add(Color.black);
-//            }
+        for (Double psi : psiList) {
+            for (DataInput di : input_catalog) {
+                data.addSeries(getMainChart(di,psi));
+                colores.add(di.getColor());
+            }
         }
-
     }
 
     @Override
     protected double getfdet(DataInput di, double time) {
+        return 0D;
+
+    }
+
+    protected double getfdet(DataInput di, double time, double psi) {
         Double result = 0D;
         if (psi < 1) {
             Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)) * di.getTau());
@@ -149,12 +149,16 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getMainChart(DataInput di) {
+        throw new UnsupportedOperationException("not supported AT ALL LOL");
+    }
+
+    private XYSeries getMainChart(DataInput di, Double psi) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
-            double value = getfdet(di, time);
+            double value = getfdet(di, time,psi);
             debug("Y(" + time + ") generado: " + value);
             reto.add(time, value);
         }

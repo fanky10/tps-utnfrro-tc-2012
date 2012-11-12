@@ -14,6 +14,7 @@ import tdc.entidades.DataInput;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import java.util.List;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -38,12 +39,12 @@ public class EntradaEscalon extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private Boolean dibujarAmplitud = true;
-    private Double psi;
+    private List<Double> psiList = new ArrayList<Double>();
 
     public EntradaEscalon(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
         super(input);
         this.dibujarAmplitud = dibujarAmplitud;
-        this.psi = input.getPsi();
+        this.psiList = input.getPsi();
         init();
     }
 
@@ -63,12 +64,10 @@ public class EntradaEscalon extends FuncionTransferencia {
     protected void createDataset() {
         data = new XYSeriesCollection();
         colores = new ArrayList<Color>();
-        for (DataInput di : input_catalog) {
-            data.addSeries(getMainChart(di));
-            colores.add(di.getColor());
-            data.addSeries(getCteTiempo(di));
-            colores.add(Color.black);
-            if (dibujarAmplitud) {
+        for (Double psi : psiList) {
+            for (DataInput di : input_catalog) {
+                data.addSeries(getMainChart(di, psi));
+                colores.add(di.getColor());
                 data.addSeries(getAmplitud(di));
                 colores.add(Color.black);
             }
@@ -77,8 +76,9 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     //<editor-fold desc="overriden-methods">
-    protected double getfdet(DataInput di, double time) {
+    protected double getfdet(DataInput di, double time, Double psi) {
         Double result = 0D;
+
         if (psi < 1) {
             Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
             debug("t1First: " + t1First);
@@ -142,15 +142,20 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getMainChart(DataInput di) {
+        throw new UnsupportedOperationException("not supported yet");
+    }
+
+    private XYSeries getMainChart(DataInput di, Double psi) {
         XYSeries reto = new XYSeries(di.getLabel());
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
         for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
-            double value = getfdet(di, time);
+            double value = getfdet(di, time, psi);
             debug("Y(" + time + ") generado: " + value);
             reto.add(time, value);
         }
+
         return reto;
     }
 
@@ -225,5 +230,10 @@ public class EntradaEscalon extends FuncionTransferencia {
     @Override
     public TableCellRenderer createTableRenderer() {
         return new MyColorCellRenderer(input_catalog);
+    }
+
+    @Override
+    protected double getfdet(DataInput di, double time) {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

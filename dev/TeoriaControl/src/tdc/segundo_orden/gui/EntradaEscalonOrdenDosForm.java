@@ -4,6 +4,8 @@
  */
 package tdc.segundo_orden.gui;
 
+import java.util.ArrayList;
+import java.util.List;
 import tdc.entidades.DataInput;
 import tdc.entidades.DataInputCatalog;
 
@@ -13,7 +15,7 @@ import tdc.entidades.DataInputCatalog;
  */
 public class EntradaEscalonOrdenDosForm extends DataInputCatalog {
 
-    private Double psi;
+    private List<Double> psi = new ArrayList<Double>();
 
     @Override
     public int compare(DataInput o1, DataInput o2) {
@@ -23,11 +25,11 @@ public class EntradaEscalonOrdenDosForm extends DataInputCatalog {
         return (o1.getTau() > o2.getTau()) ? 1 : -1;
     }
 
-    public Double getPsi() {
+    public  List<Double> getPsi() {
         return psi;
     }
 
-    public void setPsi(Double psi) {
+    public void setPsi( List<Double> psi) {
         this.psi = psi;
     }
 }
