@@ -22,11 +22,12 @@ import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.title.LegendTitle;
+import org.jfree.ui.RectangleEdge;
 import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
-import tdc.util.ApplicationConstants;
 
 /**
  *
@@ -36,20 +37,15 @@ import tdc.util.ApplicationConstants;
  */
 public class EntradaEscalon extends FuncionTransferencia {
 
+    public static double NCTE_TAU_GRAFICA = 10D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
-    private Boolean dibujarAmplitud = true;
     private List<Double> psiList = new ArrayList<Double>();
 
-    public EntradaEscalon(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
+    public EntradaEscalon(EntradaEscalonOrdenDosForm input) {
         super(input);
-        this.dibujarAmplitud = dibujarAmplitud;
         this.psiList = input.getPsi();
         init();
-    }
-
-    public EntradaEscalon(EntradaEscalonOrdenDosForm input) {
-        this(input, true);
     }
 
     private void init() {
@@ -67,9 +63,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
                 data.addSeries(getMainChart(di, psi));
-                colores.add(di.getColor());
                 data.addSeries(getAmplitud(di));
-                colores.add(Color.black);
             }
         }
 
@@ -78,48 +72,48 @@ public class EntradaEscalon extends FuncionTransferencia {
     //<editor-fold desc="overriden-methods">
     protected double getfdet(DataInput di, double time, Double psi) {
         Double result = 0D;
-
-        if (psi < 1) {
-            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
-            debug("t1First: " + t1First);
-            Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
-            debug("t1Second: " + t1Second);
-            Double secondTerm1 = t1First * t1Second;
-            debug("secondTerm1: " + secondTerm1);
-            debug("-----------------");
-
-            Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
-            debug("sinFirst: " + sinFirst);
-            Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
-            debug("sinSecond: " + sinSecond);
-            Double secondTerm2 = Math.sin(sinFirst + sinSecond);
-            debug("secondTerm2: " + secondTerm2);
-
-            result = 1 - secondTerm1 * secondTerm2;
-        } else if (psi == 1) {
+        //psi >0
+        if (psi < 0) {
+            throw new IllegalArgumentException("invalid psi value: " + psi);
+        }
+        if (psi == 1) {
             Double t1First = 1 + time / di.getTau();
             debug("t1First: " + t1First);
             Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
             debug("t1Second: " + t1Second);
-            debug("-----------------");
-
+            
             result = 1 - t1First * t1Second;
-
-        } else {
+            
+        }
+        else if (psi < 1) {
+            Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
+            Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
+            Double secondTerm1 = t1First * t1Second;
+            debug("secondTerm1: " + secondTerm1);
+            
+            Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
+            Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
+            Double secondTerm2 = Math.sin(sinFirst + sinSecond);
+            debug("secondTerm2: " + secondTerm2);
+            
+            result = 1 - secondTerm1 * secondTerm2;
+        }  else { //psi > 1 :P
             Double t1First = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             debug("t1First: " + t1First);
-            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2)) - 1) * (time / di.getTau());
+            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2) - 1)) * (time / di.getTau());
             debug("coshFirst: " + coshFirst);
-            Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2)) - 1);
+            Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2) - 1));
             debug("t1Second: " + t1Second);
-            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2)) - 1) * (time / di.getTau());
+            Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1)) * (time / di.getTau());
             debug("sinhFirst: " + sinhFirst);
-            debug("-----------------");
-
+            
             result = 1 - t1First * (coshFirst + t1Second * sinhFirst);
         }
-        return di.getAmplitud() * result;
-        //return (di.getAmplitud() * (1 - Math.pow(Math.E, (-time / di.getTau()))));
+        //return di.getAmplitud() * result;
+        debug("Y(" + time + ") generado: " + result);
+        debug("-----------------");
+        return result;
+
     }
 
     public double getPorcentajeAlgebraico(DataInput di) {
@@ -134,7 +128,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         debug("--tmin seek");
         double ytmin = di.getAmplitud() * 0.1;
         double ytmax = di.getAmplitud() * 0.9;
-        tmin = -di.getTau() * Math.log(-((ytmin / di.getAmplitud()) - 1));//-(tau * (Math.log(-((ytmin-1)/amplitud))));
+        tmin = -di.getTau() * Math.log(-((ytmin / di.getAmplitud()) - 1));
         debug("tmin found! " + tmin);
         tmax = -di.getTau() * Math.log(-((ytmax / di.getAmplitud()) - 1));
         debug("tmax found! " + tmax);
@@ -146,31 +140,20 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getMainChart(DataInput di, Double psi) {
-        XYSeries reto = new XYSeries(di.getLabel());
+        XYSeries reto = new XYSeries(di.getLabel() + " -- " + psi);
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
-        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+        for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time, psi);
-            debug("Y(" + time + ") generado: " + value);
             reto.add(time, value);
         }
-
-        return reto;
-    }
-
-    private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
-        double value = getfdet(di, di.getTau());
-        reto.add(0, value);
-        reto.add(di.getTau(), value);
-        reto.add(di.getTau(), 0);
         return reto;
     }
 
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
-        Number numberTau = DataInput.NCTE_TAU_GRAFICA * maxTau;
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, di.getAmplitud());
         reto.add(numberTau, di.getAmplitud());
         return reto;
@@ -188,6 +171,8 @@ public class EntradaEscalon extends FuncionTransferencia {
                 true, // tooltips
                 false // urls
                 );
+        LegendTitle legend = chart.getLegend();
+        legend.setPosition(RectangleEdge.RIGHT);
         XYPlot plot = chart.getXYPlot();
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
         // set the color for each series
@@ -203,7 +188,6 @@ public class EntradaEscalon extends FuncionTransferencia {
 
         final NumberAxis functionAxis = new NumberAxis("y(t)");
         functionAxis.setInverted(false);
-//        functionAxis.setRange(0.0, 5 * maxTau);//automatic
         functionAxis.setTickUnit(new NumberTickUnit(1));
         plot.setRangeAxis(functionAxis);
 

@@ -38,7 +38,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         Utilidades.setDouble(txtCtei3,0.8D);
         Utilidades.setDouble(txtCtei4,1.2D);
         Utilidades.setDouble(txtCtei5,1.4D);
-        Utilidades.setDouble(txtCtej1,0.1D);
+        Utilidades.setDouble(txtCtej1,1D);
         Utilidades.setDouble(txtAmplitud,1D);
 
     }

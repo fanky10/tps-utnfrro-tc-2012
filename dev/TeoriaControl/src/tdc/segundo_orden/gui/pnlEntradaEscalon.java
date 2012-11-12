@@ -48,7 +48,7 @@ public class pnlEntradaEscalon extends JPanel {
         if(dataInputCatalog==null){
             ingresar_datos();
         }
-        entrada = new EntradaEscalon(dataInputCatalog,chkVerAmplitud.isSelected());
+        entrada = new EntradaEscalon(dataInputCatalog);
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
 
@@ -79,7 +79,6 @@ public class pnlEntradaEscalon extends JPanel {
         jPanel1 = new javax.swing.JPanel();
         jButton1 = new javax.swing.JButton();
         jButton2 = new javax.swing.JButton();
-        chkVerAmplitud = new javax.swing.JCheckBox();
 
         pnlGrafico.setBackground(new java.awt.Color(255, 255, 255));
         pnlGrafico.setBorder(javax.swing.BorderFactory.createEtchedBorder());
@@ -102,16 +101,6 @@ public class pnlEntradaEscalon extends JPanel {
             }
         });
         jPanel1.add(jButton2);
-
-        chkVerAmplitud.setBackground(new java.awt.Color(255, 255, 255));
-        chkVerAmplitud.setSelected(true);
-        chkVerAmplitud.setText("Ver Amplitud");
-        chkVerAmplitud.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                chkVerAmplitudActionPerformed(evt);
-            }
-        });
-        jPanel1.add(chkVerAmplitud);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(this);
         this.setLayout(layout);
@@ -143,13 +132,8 @@ public class pnlEntradaEscalon extends JPanel {
         ver_tabla();
     }//GEN-LAST:event_jButton2ActionPerformed
 
-    private void chkVerAmplitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkVerAmplitudActionPerformed
-        refreshDatos();
-    }//GEN-LAST:event_chkVerAmplitudActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
-    private javax.swing.JCheckBox chkVerAmplitud;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JPanel jPanel1;
