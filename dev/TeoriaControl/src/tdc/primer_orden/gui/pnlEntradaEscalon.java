@@ -29,6 +29,7 @@ public class pnlEntradaEscalon extends JPanel {
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
     private DataInputCatalog data_cat;
+
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
@@ -37,17 +38,21 @@ public class pnlEntradaEscalon extends JPanel {
     }
 
     protected void ingresar_datos() {
-        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
+        diagIngresoDatos diag = new diagIngresoDatos(null, true);
         diag.setVisible(true);
+        boolean cancelado = diagIngresoDatos.CANCELADO;
         diag.dispose();
-        data_cat = diag.getDatosIngresados();
-        refreshDatos();
+        if (!cancelado) {
+            data_cat = diag.getDatosIngresados();
+            refreshDatos();
+        }
     }
-    private void refreshDatos(){
-        if(data_cat==null){
+
+    private void refreshDatos() {
+        if (data_cat == null) {
             ingresar_datos();
         }
-        entrada = new EntradaEscalon(data_cat,chkVerAmplitud.isSelected());
+        entrada = new EntradaEscalon(data_cat, chkVerAmplitud.isSelected());
         cPanel.setModel(new DefaultChartModel(entrada.getChart()));
     }
 
@@ -145,7 +150,6 @@ public class pnlEntradaEscalon extends JPanel {
     private void chkVerAmplitudActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_chkVerAmplitudActionPerformed
         refreshDatos();
     }//GEN-LAST:event_chkVerAmplitudActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JCheckBox chkVerAmplitud;

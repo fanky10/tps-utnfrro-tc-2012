@@ -24,12 +24,12 @@ import tdc.entidades.DataInput;
 public class diagIngresoDatos extends javax.swing.JDialog {
     public static final int ENTRADA_ESCALON = 1;
     public static final int ENTRADA_IMPULSO = 2;
-    private int tipo_entrada;
+    
+    public static Boolean CANCELADO = true;
     /** Creates new form diagIngresoDatos */
-    public diagIngresoDatos(java.awt.Frame parent, boolean modal,int tipo_entrada) {
+    public diagIngresoDatos(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
-        this.tipo_entrada=tipo_entrada;
         rb5a1t.setSelected(true);
         cambia_label();
         setLocationRelativeTo(null);
@@ -81,6 +81,10 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         Collections.sort(data,data);
         return data;
     }
+    private void aceptar(){
+        CANCELADO=false;
+        this.dispose();
+    }
 
     
 
@@ -94,6 +98,7 @@ public class diagIngresoDatos extends javax.swing.JDialog {
     private void initComponents() {
 
         buttonGroup1 = new javax.swing.ButtonGroup();
+        jButton2 = new javax.swing.JButton();
         lbl5Var = new javax.swing.JLabel();
         jPanel1 = new javax.swing.JPanel();
         txtCtei1 = new javax.swing.JTextField();
@@ -108,6 +113,9 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         rb5a1t = new javax.swing.JRadioButton();
         rb5t1a = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
+        jButton3 = new javax.swing.JButton();
+
+        jButton2.setText("jButton2");
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -195,22 +203,30 @@ public class diagIngresoDatos extends javax.swing.JDialog {
         });
         jPanel2.add(jButton1);
 
+        jButton3.setText("Cancelar");
+        jButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton3ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton3);
+
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(lbl5Var, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
+                .addComponent(lbl5Var, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
                 .addContainerGap())
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
-                        .addComponent(lbl1Var, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE)
-                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 301, Short.MAX_VALUE))
+                        .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                        .addComponent(jPanel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                        .addComponent(lbl1Var, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE)
+                        .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, 515, Short.MAX_VALUE))
                     .addContainerGap()))
         );
         layout.setVerticalGroup(
@@ -218,7 +234,7 @@ public class diagIngresoDatos extends javax.swing.JDialog {
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(lbl5Var, javax.swing.GroupLayout.PREFERRED_SIZE, 23, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(219, Short.MAX_VALUE))
+                .addContainerGap(277, Short.MAX_VALUE))
             .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(layout.createSequentialGroup()
                     .addGap(33, 33, 33)
@@ -268,8 +284,13 @@ public class diagIngresoDatos extends javax.swing.JDialog {
 }//GEN-LAST:event_rb5t1aActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-        dispose();
+        aceptar();
 }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton3ActionPerformed
+        dispose();
+        
+    }//GEN-LAST:event_jButton3ActionPerformed
 
     /**
     * @param args the command line arguments
@@ -277,7 +298,7 @@ public class diagIngresoDatos extends javax.swing.JDialog {
     public static void main(String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                diagIngresoDatos dialog = new diagIngresoDatos(new javax.swing.JFrame(), true,diagIngresoDatos.ENTRADA_ESCALON);
+                diagIngresoDatos dialog = new diagIngresoDatos(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     public void windowClosing(java.awt.event.WindowEvent e) {
                         System.exit(0);
@@ -291,6 +312,8 @@ public class diagIngresoDatos extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
+    private javax.swing.JButton jButton3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;

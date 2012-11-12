@@ -39,16 +39,15 @@ public class pnlEntradaImpulso extends JPanel {
      * 0.2 generar chart y actualizar el panel
      */
     protected void ingresar_datos() {
-        //v0.1
-//        String message = javax.swing.JOptionPane.showInputDialog("Ingrese el nombre del nuevo chart");
-//        cPanel.setModel(new DefaultChartModel(message,"x","y"));
-        //v0.2
-        diagIngresoDatos diag = new diagIngresoDatos(null, true, diagIngresoDatos.ENTRADA_ESCALON);
+        diagIngresoDatos diag = new diagIngresoDatos(null, true);
         diag.setVisible(true);
+        boolean cancelado = diagIngresoDatos.CANCELADO;
         diag.dispose();
-        DataInputCatalog data_cat = diag.getDatosIngresados();
-        entrada = new EntradaImpulso(data_cat);
-        cPanel.setModel(new DefaultChartModel(entrada.getChart()));
+        if (!cancelado) {
+            DataInputCatalog data_cat = diag.getDatosIngresados();
+            entrada = new EntradaImpulso(data_cat);
+            cPanel.setModel(new DefaultChartModel(entrada.getChart()));
+        }
     }
 
     protected void ver_tabla() {
