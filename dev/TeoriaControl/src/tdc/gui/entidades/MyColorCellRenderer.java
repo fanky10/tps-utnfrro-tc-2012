@@ -18,7 +18,7 @@ import tdc.entidades.DataInputCatalog;
  * @author facundo
  */
 public class MyColorCellRenderer implements TableCellRenderer{
-    private static final DefaultTableCellRenderer default_cell_renderer = new DefaultTableCellRenderer();
+    private static final DefaultTableCellRenderer DEFAULT_CELL_RENDERER = new DefaultTableCellRenderer();
     private DataInputCatalog data_input;
     public MyColorCellRenderer(DataInputCatalog data_input){
         this.data_input=data_input;
@@ -26,18 +26,18 @@ public class MyColorCellRenderer implements TableCellRenderer{
 
     public Component getTableCellRendererComponent(JTable jtable, Object value,boolean isSelected, boolean hasFocus, int row, int column)  {
         if(isSelected){
-            return default_cell_renderer.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
+            return DEFAULT_CELL_RENDERER.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
         }
-        Component renderer = default_cell_renderer.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
+        Component renderer = DEFAULT_CELL_RENDERER.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
         ((JLabel) renderer).setOpaque(true);
         try{
             DataInput di = data_input.get(row);
             renderer.setBackground(di.getColor());
             renderer.setForeground(Color.BLACK);
             return renderer;
-        }catch(Throwable t){
-            System.out.println("some error: "+t.getMessage());
-            return default_cell_renderer.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
+        }catch(IndexOutOfBoundsException t){
+            System.out.println("imput with no data: "+t.getMessage());
+            return DEFAULT_CELL_RENDERER.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
         }
     }
 }
