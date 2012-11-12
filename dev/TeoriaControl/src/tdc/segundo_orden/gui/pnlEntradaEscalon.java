@@ -28,7 +28,7 @@ public class pnlEntradaEscalon extends JPanel {
 
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
-    private EntradaEscalonOrdenDosForm dataInputCatalog;
+    private EntradaEscalonImpulsoOrdenDosForm dataInputCatalog;
 
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {

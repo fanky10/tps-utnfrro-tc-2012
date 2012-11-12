@@ -20,7 +20,9 @@ import tdc.entidades.DataInput;
  * @author fanky
  */
 public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
+
     public static Boolean CANCELADO = true;
+
     /** Creates new form diag */
     public DiagIngresoEntradaEscalonImpulso(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
@@ -54,8 +56,8 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
         }
     }
 
-    public EntradaEscalonOrdenDosForm getDatosIngresados() {
-        EntradaEscalonOrdenDosForm data = new EntradaEscalonOrdenDosForm();
+    public EntradaEscalonImpulsoOrdenDosForm getDatosIngresados() {
+        EntradaEscalonImpulsoOrdenDosForm data = new EntradaEscalonImpulsoOrdenDosForm();
         double var1 = Utilidades.getDouble(txtCtei1);
         double var2 = Utilidades.getDouble(txtCtei2);
         double var3 = Utilidades.getDouble(txtCtei3);

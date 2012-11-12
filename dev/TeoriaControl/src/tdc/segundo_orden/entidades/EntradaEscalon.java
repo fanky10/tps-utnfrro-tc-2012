@@ -32,7 +32,7 @@ import tdc.Utilidades;
 import tdc.entidades.FuncionTransferencia;
 import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
-import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
+import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
 
 /**
  *
@@ -48,7 +48,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private List<Double> psiList = new ArrayList<Double>();
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
 
-    public EntradaEscalon(EntradaEscalonOrdenDosForm input) {
+    public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
         init();

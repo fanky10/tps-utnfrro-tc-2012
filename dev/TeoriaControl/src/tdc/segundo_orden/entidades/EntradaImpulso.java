@@ -20,7 +20,7 @@ import tdc.Utilidades;
 import tdc.entidades.DataInput;
 import tdc.entidades.FuncionTransferencia;
 import tdc.gui.entidades.MyColorCellRenderer;
-import tdc.segundo_orden.gui.EntradaEscalonOrdenDosForm;
+import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
 import tdc.util.ApplicationConstants;
 
 /**
@@ -34,14 +34,14 @@ public class EntradaImpulso extends FuncionTransferencia {
     private Boolean dibujarAmplitud = true;
     private java.util.List<Double> psiList = new ArrayList<Double>();
 
-    public EntradaImpulso(EntradaEscalonOrdenDosForm input, Boolean dibujarAmplitud) {
+    public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input, Boolean dibujarAmplitud) {
         super(input);
         this.dibujarAmplitud = dibujarAmplitud;
         this.psiList = input.getPsi();
         init();
     }
 
-    public EntradaImpulso(EntradaEscalonOrdenDosForm input) {
+    public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
         this(input, true);
     }
 
