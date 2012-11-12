@@ -14,7 +14,9 @@ import tdc.entidades.DataInput;
 import java.awt.Color;
 import java.util.ArrayList;
 
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
@@ -81,38 +83,37 @@ public class EntradaEscalon extends FuncionTransferencia {
             debug("t1First: " + t1First);
             Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
             debug("t1Second: " + t1Second);
-            
+
             result = 1 - t1First * t1Second;
-            
-        }
-        else if (psi < 1) {
+
+        } else if (psi < 1) {
             Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
             Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             Double secondTerm1 = t1First * t1Second;
             debug("secondTerm1: " + secondTerm1);
-            
+
             Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
             Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
             Double secondTerm2 = Math.sin(sinFirst + sinSecond);
             debug("secondTerm2: " + secondTerm2);
-            
+
             result = 1 - secondTerm1 * secondTerm2;
-        }  else { //psi > 1 :P
+        } else { //psi > 1 :P
             Double t1First = Math.pow(Math.E, ((-psi * time) / di.getTau()));
             debug("t1First: " + t1First);
-            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2) - 1)* (time / di.getTau()));
+            Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2) - 1) * (time / di.getTau()));
             debug("coshFirst: " + coshFirst);
             Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2) - 1));
             debug("t1Second: " + t1Second);
             Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1) * (time / di.getTau()));
             debug("sinhFirst: " + sinhFirst);
-            debug("generado??: "+(t1First*(coshFirst + t1Second*sinhFirst)));
+            debug("generado??: " + (t1First * (coshFirst + t1Second * sinhFirst)));
             result = 1 - t1First * (coshFirst + t1Second * sinhFirst);
         }
-        //return di.getAmplitud() * result;
-        debug("Y(" + time + ") generado: " + result);
+
+        debug("Y(" + time + ") generado: " + (di.getAmplitud() * result));
         debug("-----------------");
-        return result;
+        return di.getAmplitud() * result;
 
     }
 
@@ -197,18 +198,63 @@ public class EntradaEscalon extends FuncionTransferencia {
     //TODO: change this, generate different table data.
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
-        for (DataInput di : input_catalog) {
-            tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
-                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
-                    });
+        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Sin suficientes datos"}, 0);
+        List<String> header = new ArrayList<String>();
+        if (input_catalog.size() == 1) {
+            header.add("Terminos");
+            for (Double psi : psiList) {
+                header.add("psi " + psi);
+            }
+            tmodel = new DefaultTableModel(header.toArray(new String[0]), 0);
+            Map<String, List<String>> terminos = getTerminos(input_catalog.get(0).getTau(), psiList);
+            for(String key :terminos.keySet()){
+                List<String> values = terminos.get(key);
+                List<String> row = new ArrayList<String>();
+                row.add(key.toString());
+                row.addAll(values);
+                tmodel.addRow(row.toArray(new String[0]));
+            }
+        } else {//several tau's 1 psi
         }
+
         return tmodel;
     }
 
-    private Double getTiempoAsentamiento(DataInput di) {
-        return DataInput.NCTE_TAU_TABLA * di.getTau();
+    private Map<String, List<String>> getTerminos(Double tau, List<Double> psiList) {
+        Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
+        List<String> overshootValues = new ArrayList<String>();
+        List<String> decayRatioValues = new ArrayList<String>();
+        for(Double psi: psiList){
+            //add overshoot
+            if(psi<1){
+                Double overshoot = getOvershoot(psi);
+                overshootValues.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
+                decayRatioValues.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
+            }else{
+                overshootValues.add("-");
+                decayRatioValues.add("-");
+            }
+        }
+        result.put("Overshoot", overshootValues);
+        result.put("DecayRatio", decayRatioValues);
+        return result;
+    }
+    private Double getOvershoot(Double psi){
+        Double exp = -(Math.PI*psi)/(Math.sqrt(1-Math.pow(psi, 2)));
+        return Math.pow(Math.E, exp);
+        
+    }
+    private Double getDecayRatio(Double overshoot){
+        return Math.pow(overshoot, 2);
+    }
+    private Double getRiseTime(){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    private Double getResponseTime(){
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    private Double getPeriodOscilation(){
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
