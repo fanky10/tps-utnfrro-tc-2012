@@ -37,12 +37,14 @@ public class pnlEntradaImpulso extends JPanel {
     }
 
     protected void ingresar_datos() {
-        DiagIngresoEntradaEscalon diag = new DiagIngresoEntradaEscalon(null, true);
+        DiagIngresoEntradaEscalonImpulso diag = new DiagIngresoEntradaEscalonImpulso(null, true);
         diag.setVisible(true);
+        boolean cancelado = DiagIngresoEntradaEscalonImpulso.CANCELADO;
         diag.dispose();
-        dataInputCatalog = diag.getDatosIngresados();
-        refreshDatos();
-
+        if (!cancelado) {
+            dataInputCatalog = diag.getDatosIngresados();
+            refreshDatos();
+        }
     }
 
     protected void ver_tabla() {

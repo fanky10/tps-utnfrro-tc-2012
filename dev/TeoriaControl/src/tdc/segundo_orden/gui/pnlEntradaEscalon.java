@@ -20,7 +20,6 @@ import tdc.gui.entidades.DefaultChartModel;
 import tdc.gui.frmTable;
 import tdc.segundo_orden.entidades.EntradaEscalon;
 
-
 /**
  *
  * @author facundo
@@ -30,6 +29,7 @@ public class pnlEntradaEscalon extends JPanel {
     private CustomChartPanel cPanel;
     private EntradaEscalon entrada;
     private EntradaEscalonOrdenDosForm dataInputCatalog;
+
     /** Creates new form pnlEscalon */
     public pnlEntradaEscalon() {
         initComponents();
@@ -38,14 +38,18 @@ public class pnlEntradaEscalon extends JPanel {
     }
 
     protected void ingresar_datos() {
-        DiagIngresoEntradaEscalon diag = new DiagIngresoEntradaEscalon(null, true);
+        DiagIngresoEntradaEscalonImpulso diag = new DiagIngresoEntradaEscalonImpulso(null, true);
         diag.setVisible(true);
+        boolean cancelado = DiagIngresoEntradaEscalonImpulso.CANCELADO;
         diag.dispose();
-        dataInputCatalog = diag.getDatosIngresados();
-        refreshDatos();
+        if (!cancelado) {
+            dataInputCatalog = diag.getDatosIngresados();
+            refreshDatos();
+        }
     }
-    private void refreshDatos(){
-        if(dataInputCatalog==null){
+
+    private void refreshDatos() {
+        if (dataInputCatalog == null) {
             ingresar_datos();
         }
         entrada = new EntradaEscalon(dataInputCatalog);
@@ -131,7 +135,6 @@ public class pnlEntradaEscalon extends JPanel {
     private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
         ver_tabla();
     }//GEN-LAST:event_jButton2ActionPerformed
-
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;

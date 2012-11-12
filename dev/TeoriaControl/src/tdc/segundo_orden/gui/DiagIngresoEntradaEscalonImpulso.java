@@ -12,7 +12,6 @@ package tdc.segundo_orden.gui;
 
 import java.awt.Color;
 import java.util.ArrayList;
-import javax.swing.JOptionPane;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
 
@@ -20,10 +19,10 @@ import tdc.entidades.DataInput;
  *
  * @author fanky
  */
-public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
-
+public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
+    public static Boolean CANCELADO = true;
     /** Creates new form diag */
-    public DiagIngresoEntradaEscalon(java.awt.Frame parent, boolean modal) {
+    public DiagIngresoEntradaEscalonImpulso(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         initComponents();
         rb5a1t.setSelected(true);
@@ -31,71 +30,63 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         setLocationRelativeTo(null);
         defaultValues();
     }
-    
-    private void defaultValues(){
-        Utilidades.setDouble(txtCtei1,0.2D);
-        Utilidades.setDouble(txtCtei2,0.4D);
-        Utilidades.setDouble(txtCtei3,0.8D);
-        Utilidades.setDouble(txtCtei4,1.2D);
-        Utilidades.setDouble(txtCtei5,1.4D);
-        Utilidades.setDouble(txtCtej1,1D);
-        Utilidades.setDouble(txtAmplitud,1D);
+
+    private void defaultValues() {
+        Utilidades.setDouble(txtCtei1, 0.2D);
+        Utilidades.setDouble(txtCtei2, 0.4D);
+        Utilidades.setDouble(txtCtei3, 0.8D);
+        Utilidades.setDouble(txtCtei4, 1.2D);
+        Utilidades.setDouble(txtCtei5, 1.4D);
+        Utilidades.setDouble(txtCtej1, 1D);
+        Utilidades.setDouble(txtAmplitud, 1D);
 
     }
-    
-    private void cambia_label(){
-        if(rb5a1t.isSelected()){
+
+    private void cambia_label() {
+        if (rb5a1t.isSelected()) {
             lbl5Var.setText("Ingrese Psi");
             lbl1Var.setText("Ingrese Constante de TIEMPO");
-        }else if(rb5t1a.isSelected()){
+        } else if (rb5t1a.isSelected()) {
             lbl5Var.setText("Ingrese Constantes de TIEMPO");
             lbl1Var.setText("Ingrese Psi");
-        }else{
+        } else {
             throw new IllegalArgumentException("no possible radiobutton selected!");
         }
     }
-    
-    public EntradaEscalonOrdenDosForm getDatosIngresados(){
+
+    public EntradaEscalonOrdenDosForm getDatosIngresados() {
         EntradaEscalonOrdenDosForm data = new EntradaEscalonOrdenDosForm();
         double var1 = Utilidades.getDouble(txtCtei1);
         double var2 = Utilidades.getDouble(txtCtei2);
         double var3 = Utilidades.getDouble(txtCtei3);
         double var4 = Utilidades.getDouble(txtCtei4);
         double var5 = Utilidades.getDouble(txtCtei5);
-        
+
         double var6 = Utilidades.getDouble(txtCtej1);
-        
+
         double amplitud = Utilidades.getDouble(txtAmplitud);
         java.util.List<Double> psiV = new ArrayList<Double>();
-        if(rb5a1t.isSelected()){
+        if (rb5a1t.isSelected()) {
             //todo: VALIDAR VALOR DE PSI
-            
             psiV.add(var1);
             psiV.add(var2);
             psiV.add(var3);
             psiV.add(var4);
             psiV.add(var5);
-            data.add(new DataInput("Datos1",amplitud,var6,Color.red));
-        }else if(rb5t1a.isSelected()){
+            data.add(new DataInput("Datos1", amplitud, var6, Color.red));
+        } else if (rb5t1a.isSelected()) {
             psiV.add(var6);
-            data.add(new DataInput("Datos1",amplitud,var1,Color.red));
-            data.add(new DataInput("Datos2",amplitud,var2,Color.blue));
-            data.add(new DataInput("Datos3",amplitud,var3,Color.green));
-            data.add(new DataInput("Datos4",amplitud,var4,Color.orange));
-            data.add(new DataInput("Datos5",amplitud,var5,Color.yellow));
-        }else{
+            data.add(new DataInput("Datos1", amplitud, var1, Color.red));
+            data.add(new DataInput("Datos2", amplitud, var2, Color.blue));
+            data.add(new DataInput("Datos3", amplitud, var3, Color.green));
+            data.add(new DataInput("Datos4", amplitud, var4, Color.orange));
+            data.add(new DataInput("Datos5", amplitud, var5, Color.yellow));
+        } else {
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
         data.setPsi(psiV);
-//        Double psi = Utilidades.getDouble(txtPsi); 
-//        if(psi<0 && psi<=-1){
-//            final String message = "el valor no puede ser menor a -1";
-//            JOptionPane.showMessageDialog(this, message);
-//            throw new IllegalArgumentException(message);
-//        }
-//        data.setPsi(psi);
         data.autoSort();
-        
+
         return data;
     }
 
@@ -123,6 +114,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         rb5a1t = new javax.swing.JRadioButton();
         rb5t1a = new javax.swing.JRadioButton();
         jButton1 = new javax.swing.JButton();
+        jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtAmplitud = new javax.swing.JTextField();
 
@@ -179,8 +171,8 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
             .add(jPanel4Layout.createSequentialGroup()
                 .addContainerGap()
                 .add(jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
-                    .add(lbl5Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
-                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                    .add(lbl5Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+                    .add(jPanel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)))
         );
         jPanel4Layout.setVerticalGroup(
             jPanel4Layout.createParallelGroup(org.jdesktop.layout.GroupLayout.LEADING)
@@ -228,6 +220,14 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         });
         jPanel2.add(jButton1);
 
+        jButton2.setText("Cancelar");
+        jButton2.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jButton2ActionPerformed(evt);
+            }
+        });
+        jPanel2.add(jButton2);
+
         jLabel3.setText("Amplitud");
 
         txtAmplitud.setText("Psi");
@@ -242,17 +242,17 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
                     .add(org.jdesktop.layout.GroupLayout.TRAILING, layout.createSequentialGroup()
                         .addContainerGap()
                         .add(layout.createParallelGroup(org.jdesktop.layout.GroupLayout.TRAILING)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)
-                            .add(org.jdesktop.layout.GroupLayout.LEADING, txtCtej1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE)))
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, jPanel2, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                            .add(org.jdesktop.layout.GroupLayout.LEADING, txtCtej1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)))
                     .add(layout.createSequentialGroup()
                         .addContainerGap()
-                        .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                        .add(jLabel3, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .addContainerGap()
-                        .add(txtAmplitud, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 402, Short.MAX_VALUE))
+                        .add(txtAmplitud, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(24, 24, 24)
-                        .add(lbl1Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 398, Short.MAX_VALUE)))
+                        .add(lbl1Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -308,8 +308,12 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         cambia_label();     }//GEN-LAST:event_rb5t1aActionPerformed
 
     private void jButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton1ActionPerformed
-
+        CANCELADO = false;
         dispose();     }//GEN-LAST:event_jButton1ActionPerformed
+
+    private void jButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jButton2ActionPerformed
+        dispose();
+    }//GEN-LAST:event_jButton2ActionPerformed
 
     /**
      * @param args the command line arguments
@@ -328,13 +332,13 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalonImpulso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalonImpulso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalonImpulso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalon.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(DiagIngresoEntradaEscalonImpulso.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
@@ -342,7 +346,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
         java.awt.EventQueue.invokeLater(new Runnable() {
 
             public void run() {
-                DiagIngresoEntradaEscalon dialog = new DiagIngresoEntradaEscalon(new javax.swing.JFrame(), true);
+                DiagIngresoEntradaEscalonImpulso dialog = new DiagIngresoEntradaEscalonImpulso(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
 
                     @Override
@@ -357,6 +361,7 @@ public class DiagIngresoEntradaEscalon extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
+    private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
