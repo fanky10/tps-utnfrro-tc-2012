@@ -42,7 +42,7 @@ import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
  */
 public class EntradaEscalon extends FuncionTransferencia {
 
-    public static double NCTE_TAU_GRAFICA = 10D;
+    private static final double NCTE_TAU_GRAFICA = 10D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private List<Double> psiList = new ArrayList<Double>();

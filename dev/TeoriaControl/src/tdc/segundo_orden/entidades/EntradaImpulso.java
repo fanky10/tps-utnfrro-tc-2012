@@ -6,6 +6,8 @@ package tdc.segundo_orden.entidades;
 
 import java.awt.Color;
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jfree.chart.ChartFactory;
@@ -19,9 +21,9 @@ import org.jfree.data.xy.XYSeriesCollection;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
 import tdc.entidades.FuncionTransferencia;
+import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
-import tdc.util.ApplicationConstants;
 
 /**
  * 5Tau en cte tiempo
@@ -29,20 +31,16 @@ import tdc.util.ApplicationConstants;
  */
 public class EntradaImpulso extends FuncionTransferencia {
 
+    private static final double NCTE_TAU_GRAFICA = 10D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
-    private Boolean dibujarAmplitud = true;
     private java.util.List<Double> psiList = new ArrayList<Double>();
-
-    public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input, Boolean dibujarAmplitud) {
-        super(input);
-        this.dibujarAmplitud = dibujarAmplitud;
-        this.psiList = input.getPsi();
-        init();
-    }
+    private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
 
     public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
-        this(input, true);
+        super(input);
+        this.psiList = input.getPsi();
+        init();
     }
 
     private void init() {
@@ -59,8 +57,7 @@ public class EntradaImpulso extends FuncionTransferencia {
         colores = new ArrayList<Color>();
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
-                data.addSeries(getMainChart(di,psi));
-                colores.add(di.getColor());
+                data.addSeries(getMainChart(di, psi));
             }
         }
     }
@@ -136,7 +133,7 @@ public class EntradaImpulso extends FuncionTransferencia {
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
-        timeAxis.setRange(0.0, 5 * maxTau);
+        timeAxis.setRange(0.0, NCTE_TAU_GRAFICA * maxTau);
         plot.setDomainAxis(timeAxis);
 
 
@@ -153,32 +150,15 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getMainChart(DataInput di, Double psi) {
-        XYSeries reto = new XYSeries(di.getLabel());
+        XYSeries reto = new XYSeries(di.getLabel() + " -- " + psi);
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
-        for (double time = 0; time < DataInput.NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+        for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
-            double value = getfdet(di, time,psi);
+            double value = getfdet(di, time, psi);
             debug("Y(" + time + ") generado: " + value);
             reto.add(time, value);
         }
-        return reto;
-    }
-
-    private XYSeries getCteTiempo(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + " 1" + ApplicationConstants.UNICODE_TAU);
-        double value = getfdet(di, di.getTau());
-        reto.add(0, value);
-        reto.add(di.getTau(), value);
-        reto.add(di.getTau(), 0);
-        return reto;
-    }
-
-    private XYSeries getAmplitud(DataInput di) {
-        XYSeries reto = new XYSeries(di.getLabel() + "Amplitud ");
-        Number numberTau = DataInput.NCTE_TAU_GRAFICA * maxTau;
-        reto.add(0, di.getAmplitud());
-        reto.add(numberTau, di.getAmplitud());
         return reto;
     }
 
