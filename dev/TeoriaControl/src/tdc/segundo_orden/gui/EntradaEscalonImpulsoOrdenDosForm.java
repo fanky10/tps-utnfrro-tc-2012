@@ -16,6 +16,7 @@ import tdc.entidades.DataInputCatalog;
 public class EntradaEscalonImpulsoOrdenDosForm extends DataInputCatalog {
 
     private List<Double> psi = new ArrayList<Double>();
+    private double porcentajeAsentamiento = 5;
 
     @Override
     public int compare(DataInput o1, DataInput o2) {
@@ -25,11 +26,19 @@ public class EntradaEscalonImpulsoOrdenDosForm extends DataInputCatalog {
         return (o1.getTau() > o2.getTau()) ? 1 : -1;
     }
 
-    public  List<Double> getPsi() {
+    public List<Double> getPsi() {
         return psi;
     }
 
-    public void setPsi( List<Double> psi) {
+    public void setPsi(List<Double> psi) {
         this.psi = psi;
+    }
+
+    public double getPorcentajeAsentamiento() {
+        return porcentajeAsentamiento;
+    }
+
+    public void setPorcentajeAsentamiento(double porcentajeAsentamiento) {
+        this.porcentajeAsentamiento = porcentajeAsentamiento;
     }
 }

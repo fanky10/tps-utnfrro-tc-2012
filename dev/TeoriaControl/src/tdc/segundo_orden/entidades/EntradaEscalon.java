@@ -46,11 +46,13 @@ public class EntradaEscalon extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private List<Double> psiList = new ArrayList<Double>();
+    private Double porcAsentamiento = 0D;
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
 
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
+        this.porcAsentamiento = input.getPorcentajeAsentamiento();
         init();
     }
 
@@ -181,7 +183,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getBandaSuperior(DataInput di) {
-        Double banda = di.getAmplitud() * (1 + 0.05);
+        Double banda = di.getAmplitud() * (1 + porcAsentamiento/100);
         XYSeries reto = new XYSeries("Banda superior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -190,7 +192,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getBandaInferior(DataInput di) {
-        Double banda = di.getAmplitud() * (1 - 0.05);
+        Double banda = di.getAmplitud() * (1 - porcAsentamiento/100);
         XYSeries reto = new XYSeries("Banda inferior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -241,6 +243,10 @@ public class EntradaEscalon extends FuncionTransferencia {
         DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Sin suficientes datos"}, 0);
         List<String> header = new ArrayList<String>();
         if (input_catalog.size() == 1) {
+            //TODO: por cada psi, poner una linea de valores
+            //una tabla del tipo
+            // funcion 1 (con color corresp) - Overshoot, decay
+            // funcion 2 (psi = 0,3) - Overshoot, decay
             header.add("Terminos");
             for (Double psi : psiList) {
                 header.add("psi " + psi);
@@ -271,8 +277,8 @@ public class EntradaEscalon extends FuncionTransferencia {
                 Double overshoot = getOvershoot(psi);
                 overshootValues.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
                 decayRatioValues.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
-                tpoAsentamientoValues.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(psi)));
-                
+                tpoAsentamientoValues.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, tau)));
+
             } else {
                 overshootValues.add("-");
                 decayRatioValues.add("-");
@@ -284,9 +290,9 @@ public class EntradaEscalon extends FuncionTransferencia {
         result.put("tiempo de asentamiento", tpoAsentamientoValues);
         return result;
     }
-    
-    private Double getTiempoAsentamiento(Double psi) {
-        return DataInput.NCTE_TAU_TABLA * psi;
+
+    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
+        return -Math.log(porc / 100) / (psi * tau);
     }
 
     private Double getOvershoot(Double psi) {

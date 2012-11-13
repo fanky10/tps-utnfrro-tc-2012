@@ -41,6 +41,7 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
         Utilidades.setDouble(txtCtei5, 1.4D);
         Utilidades.setDouble(txtCtej1, 1D);
         Utilidades.setDouble(txtAmplitud, 1D);
+        Utilidades.setDouble(txtPorcentajeAsentamiento, 5);
 
     }
 
@@ -67,6 +68,8 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
         double var6 = Utilidades.getDouble(txtCtej1);
 
         double amplitud = Utilidades.getDouble(txtAmplitud);
+
+        double porcAsentamiento = Utilidades.getDouble(txtPorcentajeAsentamiento);
         java.util.List<Double> psiV = new ArrayList<Double>();
         if (rb5a1t.isSelected()) {
             //todo: VALIDAR VALOR DE PSI
@@ -87,6 +90,7 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
             //throw new IllegalArgumentException("no possible radiobutton selected!");
         }
         data.setPsi(psiV);
+        data.setPorcentajeAsentamiento(porcAsentamiento);
         data.autoSort();
 
         return data;
@@ -119,6 +123,8 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
         jButton2 = new javax.swing.JButton();
         jLabel3 = new javax.swing.JLabel();
         txtAmplitud = new javax.swing.JTextField();
+        jLabel1 = new javax.swing.JLabel();
+        txtPorcentajeAsentamiento = new javax.swing.JTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
 
@@ -234,6 +240,10 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
 
         txtAmplitud.setText("Psi");
 
+        jLabel1.setText("Asentamiento (%)");
+
+        txtPorcentajeAsentamiento.setText("jTextField1");
+
         org.jdesktop.layout.GroupLayout layout = new org.jdesktop.layout.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
@@ -254,7 +264,13 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
                         .add(txtAmplitud, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE))
                     .add(layout.createSequentialGroup()
                         .add(24, 24, 24)
-                        .add(lbl1Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE)))
+                        .add(lbl1Var, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 473, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .add(jLabel1, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE))
+                    .add(layout.createSequentialGroup()
+                        .addContainerGap()
+                        .add(txtPorcentajeAsentamiento, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -269,6 +285,10 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
                 .add(jLabel3)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(txtAmplitud, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(jLabel1, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, 26, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
+                .add(txtPorcentajeAsentamiento, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(org.jdesktop.layout.LayoutStyle.RELATED)
                 .add(jPanel2, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE, org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, org.jdesktop.layout.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(org.jdesktop.layout.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
@@ -364,6 +384,7 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
     private javax.swing.ButtonGroup buttonGroup1;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
+    private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
@@ -379,5 +400,6 @@ public class DiagIngresoEntradaEscalonImpulso extends javax.swing.JDialog {
     private javax.swing.JTextField txtCtei4;
     private javax.swing.JTextField txtCtei5;
     private javax.swing.JTextField txtCtej1;
+    private javax.swing.JTextField txtPorcentajeAsentamiento;
     // End of variables declaration//GEN-END:variables
 }
