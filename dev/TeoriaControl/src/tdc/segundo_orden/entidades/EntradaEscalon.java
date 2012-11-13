@@ -264,20 +264,29 @@ public class EntradaEscalon extends FuncionTransferencia {
         Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
         List<String> overshootValues = new ArrayList<String>();
         List<String> decayRatioValues = new ArrayList<String>();
+        List<String> tpoAsentamientoValues = new ArrayList<String>();
         for (Double psi : psiList) {
             //add overshoot
             if (psi < 1) {
                 Double overshoot = getOvershoot(psi);
                 overshootValues.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
                 decayRatioValues.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
+                tpoAsentamientoValues.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(psi)));
+                
             } else {
                 overshootValues.add("-");
                 decayRatioValues.add("-");
+                tpoAsentamientoValues.add("-");
             }
         }
         result.put("Overshoot", overshootValues);
         result.put("DecayRatio", decayRatioValues);
+        result.put("tiempo de asentamiento", tpoAsentamientoValues);
         return result;
+    }
+    
+    private Double getTiempoAsentamiento(Double psi) {
+        return DataInput.NCTE_TAU_TABLA * psi;
     }
 
     private Double getOvershoot(Double psi) {
