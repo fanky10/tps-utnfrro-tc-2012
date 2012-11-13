@@ -252,7 +252,7 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);
+        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Caida", "Tiempo Asentamiento"}, 0);
         //DataInput di = input_catalog.get(0);
         for(DataInput di: input_catalog){
              for (Double psi : psiList) {
