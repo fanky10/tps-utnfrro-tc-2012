@@ -4,7 +4,6 @@
  */
 package tdc.segundo_orden.entidades;
 
-import apple.awt.CColor;
 import java.awt.BasicStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -231,7 +230,6 @@ public class EntradaEscalon extends FuncionTransferencia {
         plot.setRenderer(renderer);
         for (XYSeries key : seriesSinColor) {
             int seriesIndex = data.indexOf(key);
-            Color c = (Color) plot.getRenderer().getSeriesItemLabelPaint(seriesIndex);
             Paint paint = renderer.getSeriesPaint(seriesIndex);
             if (paint == null) {
                 paint = ((AbstractRenderer) renderer).lookupSeriesPaint(seriesIndex);
@@ -252,7 +250,6 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     }
 
-    //TODO: change this, generate different table data.
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);

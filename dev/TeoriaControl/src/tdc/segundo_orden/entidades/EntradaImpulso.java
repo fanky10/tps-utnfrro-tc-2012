@@ -5,8 +5,10 @@
 package tdc.segundo_orden.entidades;
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -14,6 +16,7 @@ import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.data.xy.XYSeries;
@@ -35,11 +38,13 @@ public class EntradaImpulso extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
     private java.util.List<Double> psiList = new ArrayList<Double>();
-    private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
+    private Double porcAsentamiento = 0D;
+    private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
 
     public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
+        this.porcAsentamiento = input.getPorcentajeAsentamiento();
         init();
     }
 
@@ -57,7 +62,9 @@ public class EntradaImpulso extends FuncionTransferencia {
         colores = new ArrayList<Color>();
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
-                data.addSeries(getMainChart(di, psi));
+                XYSeries xys = getMainChart(di, psi);
+                data.addSeries(xys);
+                seriesSinColor.add(xys);
             }
         }
     }
@@ -130,6 +137,14 @@ public class EntradaImpulso extends FuncionTransferencia {
             renderer.setSeriesPaint(i, colores.get(i));
         }
         plot.setRenderer(renderer);
+        for (XYSeries key : seriesSinColor) {
+            int seriesIndex = data.indexOf(key);
+            Paint paint = renderer.getSeriesPaint(seriesIndex);
+            if (paint == null) {
+                paint = ((AbstractRenderer) renderer).lookupSeriesPaint(seriesIndex);
+            }
+            colores.add((Color) paint);
+        }
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
@@ -142,7 +157,7 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     @Override
     public TableCellRenderer createTableRenderer() {
-        return new MyColorCellRenderer(input_catalog);
+        return new MyColorCellRenderer(colores);
     }
 
     private XYSeries getMainChart(DataInput di) {
@@ -164,14 +179,42 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new Object[]{"Categoria", "Tiempo Subida", "Tiempo Asentamiento"}, 0);
-        for (DataInput di : input_catalog) {
-            tmodel.addRow(new Object[]{di.getLabel(),
-                        Utilidades.DECIMAL_FORMATTER.format(getPorcentajeAlgebraico(di)),
-                        Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(di))
-                    });
+        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);
+        if (input_catalog.size() == 1) {
+            DataInput di = input_catalog.get(0);
+            for (Double psi : psiList) {
+                List<String> row = new ArrayList<String>();
+                row.add(di.getLabel() + " -- " + psi);//categoria
+                if (psi < 1) {
+                    Double overshoot = getOvershoot(psi);
+                    row.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
+                    row.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
+                } else {
+                    row.add("-");
+                    row.add("-");
+                }
+                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di.getTau())));
+                tmodel.addRow(row.toArray(new String[0]));
+            }
+        } else {//several tau's 1 psi
+            throw new UnsupportedOperationException("not supported yet");
         }
+
         return tmodel;
+    }
+
+    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
+        return -Math.log(porc / 100) / (psi * tau);
+    }
+
+    private Double getOvershoot(Double psi) {
+        Double exp = -(Math.PI * psi) / (Math.sqrt(1 - Math.pow(psi, 2)));
+        return Math.pow(Math.E, exp);
+
+    }
+
+    private Double getDecayRatio(Double overshoot) {
+        return Math.pow(overshoot, 2);
     }
 
     private Double getTiempoAsentamiento(DataInput di) {
