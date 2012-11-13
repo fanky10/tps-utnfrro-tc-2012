@@ -6,6 +6,8 @@ package tdc.gui.entidades;
 
 import java.awt.Color;
 import java.awt.Component;
+import java.util.ArrayList;
+import java.util.List;
 import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
@@ -19,10 +21,19 @@ import tdc.entidades.DataInputCatalog;
  */
 public class MyColorCellRenderer implements TableCellRenderer{
     private static final DefaultTableCellRenderer DEFAULT_CELL_RENDERER = new DefaultTableCellRenderer();
-    private DataInputCatalog data_input;
+    private List<Color> colores = new ArrayList<Color>();
     public MyColorCellRenderer(DataInputCatalog data_input){
-        this.data_input=data_input;
+        if(data_input.size()>1){
+            for(DataInput di: data_input){
+                colores.add(di.getColor());
+            }
+        }
+        
     }
+    public MyColorCellRenderer(List<Color> colores){
+        this.colores = colores;
+    }
+    
 
     public Component getTableCellRendererComponent(JTable jtable, Object value,boolean isSelected, boolean hasFocus, int row, int column)  {
         if(isSelected){
@@ -31,8 +42,8 @@ public class MyColorCellRenderer implements TableCellRenderer{
         Component renderer = DEFAULT_CELL_RENDERER.getTableCellRendererComponent(jtable, value, isSelected, hasFocus, row, column);
         ((JLabel) renderer).setOpaque(true);
         try{
-            DataInput di = data_input.get(row);
-            renderer.setBackground(di.getColor());
+            Color c = colores.get(row);
+            renderer.setBackground(c);
             renderer.setForeground(Color.BLACK);
             return renderer;
         }catch(IndexOutOfBoundsException t){

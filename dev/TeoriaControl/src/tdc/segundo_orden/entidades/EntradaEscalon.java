@@ -4,6 +4,7 @@
  */
 package tdc.segundo_orden.entidades;
 
+import apple.awt.CColor;
 import java.awt.BasicStroke;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
@@ -13,6 +14,7 @@ import tdc.entidades.DataInput;
 
 
 import java.awt.Color;
+import java.awt.Paint;
 import java.awt.Stroke;
 import java.util.ArrayList;
 
@@ -24,6 +26,7 @@ import org.jfree.chart.axis.NumberAxis;
 import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.AbstractRenderer;
 import org.jfree.chart.renderer.xy.XYItemRenderer;
 import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
 import org.jfree.chart.title.LegendTitle;
@@ -48,6 +51,8 @@ public class EntradaEscalon extends FuncionTransferencia {
     private List<Double> psiList = new ArrayList<Double>();
     private Double porcAsentamiento = 0D;
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
+    //esto es para setear luego los colores que le pone el plotter, es re cabeza
+    private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
 
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
@@ -69,8 +74,9 @@ public class EntradaEscalon extends FuncionTransferencia {
         data = new XYSeriesCollection();
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
-                data.addSeries(getMainChart(di, psi));
-
+                XYSeries xys = getMainChart(di, psi);
+                data.addSeries(xys);
+                seriesSinColor.add(xys);
             }
         }
         // el parametro de amplitud con otro tipo de stroke (:
@@ -183,7 +189,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getBandaSuperior(DataInput di) {
-        Double banda = di.getAmplitud() * (1 + porcAsentamiento/100);
+        Double banda = di.getAmplitud() * (1 + porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda superior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -192,7 +198,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private XYSeries getBandaInferior(DataInput di) {
-        Double banda = di.getAmplitud() * (1 - porcAsentamiento/100);
+        Double banda = di.getAmplitud() * (1 - porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda inferior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -223,6 +229,15 @@ public class EntradaEscalon extends FuncionTransferencia {
             renderer.setSeriesStroke(idx, lineasMap.get(key).getStroke());
         }
         plot.setRenderer(renderer);
+        for (XYSeries key : seriesSinColor) {
+            int seriesIndex = data.indexOf(key);
+            Color c = (Color) plot.getRenderer().getSeriesItemLabelPaint(seriesIndex);
+            Paint paint = renderer.getSeriesPaint(seriesIndex);
+            if (paint == null) {
+                paint = ((AbstractRenderer) renderer).lookupSeriesPaint(seriesIndex);
+            }
+            colores.add((Color)paint);
+        }
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
@@ -240,55 +255,28 @@ public class EntradaEscalon extends FuncionTransferencia {
     //TODO: change this, generate different table data.
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Sin suficientes datos"}, 0);
-        List<String> header = new ArrayList<String>();
+        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);
         if (input_catalog.size() == 1) {
-            //TODO: por cada psi, poner una linea de valores
-            //una tabla del tipo
-            // funcion 1 (con color corresp) - Overshoot, decay
-            // funcion 2 (psi = 0,3) - Overshoot, decay
-            header.add("Terminos");
+            DataInput di = input_catalog.get(0);
             for (Double psi : psiList) {
-                header.add("psi " + psi);
-            }
-            tmodel = new DefaultTableModel(header.toArray(new String[0]), 0);
-            Map<String, List<String>> terminos = getTerminos(input_catalog.get(0).getTau(), psiList);
-            for (String key : terminos.keySet()) {
-                List<String> values = terminos.get(key);
                 List<String> row = new ArrayList<String>();
-                row.add(key.toString());
-                row.addAll(values);
+                row.add(di.getLabel() + " -- " + psi);//categoria
+                if (psi < 1) {
+                    Double overshoot = getOvershoot(psi);
+                    row.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
+                    row.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
+                } else {
+                    row.add("-");
+                    row.add("-");
+                }
+                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di.getTau())));
                 tmodel.addRow(row.toArray(new String[0]));
             }
         } else {//several tau's 1 psi
+            throw new UnsupportedOperationException("not supported yet");
         }
 
         return tmodel;
-    }
-
-    private Map<String, List<String>> getTerminos(Double tau, List<Double> psiList) {
-        Map<String, List<String>> result = new LinkedHashMap<String, List<String>>();
-        List<String> overshootValues = new ArrayList<String>();
-        List<String> decayRatioValues = new ArrayList<String>();
-        List<String> tpoAsentamientoValues = new ArrayList<String>();
-        for (Double psi : psiList) {
-            //add overshoot
-            if (psi < 1) {
-                Double overshoot = getOvershoot(psi);
-                overshootValues.add(Utilidades.DECIMAL_FORMATTER.format(overshoot));
-                decayRatioValues.add(Utilidades.DECIMAL_FORMATTER.format(getDecayRatio(overshoot)));
-                tpoAsentamientoValues.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, tau)));
-
-            } else {
-                overshootValues.add("-");
-                decayRatioValues.add("-");
-                tpoAsentamientoValues.add("-");
-            }
-        }
-        result.put("Overshoot", overshootValues);
-        result.put("DecayRatio", decayRatioValues);
-        result.put("tiempo de asentamiento", tpoAsentamientoValues);
-        return result;
     }
 
     private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
@@ -319,7 +307,7 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     @Override
     public TableCellRenderer createTableRenderer() {
-        return new MyColorCellRenderer(input_catalog);
+        return new MyColorCellRenderer(colores);
     }
 
     @Override
