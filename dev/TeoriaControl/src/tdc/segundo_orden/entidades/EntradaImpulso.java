@@ -180,9 +180,9 @@ public class EntradaImpulso extends FuncionTransferencia {
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);
-        if (input_catalog.size() == 1) {
-            DataInput di = input_catalog.get(0);
-            for (Double psi : psiList) {
+        //DataInput di = input_catalog.get(0);
+        for(DataInput di: input_catalog){
+             for (Double psi : psiList) {
                 List<String> row = new ArrayList<String>();
                 row.add(di.getLabel() + " -- " + psi);//categoria
                 if (psi < 1) {
@@ -196,10 +196,7 @@ public class EntradaImpulso extends FuncionTransferencia {
                 row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di.getTau())));
                 tmodel.addRow(row.toArray(new String[0]));
             }
-        } else {//several tau's 1 psi
-            throw new UnsupportedOperationException("not supported yet");
-        }
-
+        }              
         return tmodel;
     }
 
@@ -217,7 +214,7 @@ public class EntradaImpulso extends FuncionTransferencia {
         return Math.pow(overshoot, 2);
     }
 
-    private Double getTiempoAsentamiento(DataInput di) {
-        return DataInput.NCTE_TAU_TABLA * di.getTau();
-    }
+//    private Double getTiempoAsentamiento(DataInput di) {
+//        return DataInput.NCTE_TAU_TABLA * di.getTau();
+//    }
 }
