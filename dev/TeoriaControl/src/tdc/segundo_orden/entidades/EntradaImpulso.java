@@ -30,14 +30,17 @@ import tdc.entidades.FuncionTransferencia;
 import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
+import tdc.segundo_orden.gui.pnlEntradaImpulso;
+import tdc.util.CurvaUtil;
 
 /**
  * 5Tau en cte tiempo
+ *
  * @author fanky
  */
 public class EntradaImpulso extends FuncionTransferencia {
 
-    private static final double NCTE_TAU_GRAFICA = 10D;
+    private static final double NCTE_TAU_GRAFICA = 20D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Impulso";
     private Double maxTau = 0D;
     private java.util.List<Double> psiList = new ArrayList<Double>();
@@ -45,6 +48,8 @@ public class EntradaImpulso extends FuncionTransferencia {
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
     private Double tiempoAsentamiento = -1D;//not set
+    private CurvaUtil curvaUtil;
+    private Double maxTime = 0D;
 
     public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
@@ -54,11 +59,59 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private void init() {
+        curvaUtil = new CurvaUtil() {
+            @Override
+            public double getfdet(DataInput di, double time, Double psi) {
+                Double result = 0D;
+                if (psi < 1) {
+                    Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)) * di.getTau());
+                    debug("t1First: " + t1First);
+                    Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
+                    debug("t1Second: " + t1Second);
+                    Double secondTerm1 = t1First * t1Second;
+                    debug("secondTerm1: " + secondTerm1);
+                    Double sinFirst = Math.sin(Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau());
+                    debug("sinFirst: " + sinFirst);
+
+                    result = t1First * t1Second * sinFirst;
+
+                } else if (psi == 1) {
+                    Double t1First = (1 / Math.pow(di.getTau(), 2)) * time;
+                    debug("t1First: " + t1First);
+                    Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
+                    debug("t1Sdecond: " + t1Second);
+
+                    result = t1First * t1Second;
+
+                } else {
+                    Double t1First = time / Math.pow(di.getTau(), 2);
+                    debug("t1First: " + t1First);
+                    Double t1Second = 1 / Math.sqrt(Math.pow(psi, 2) - 1);
+                    debug("t1Second: " + t1Second);
+                    Double t1Third = Math.pow(Math.E, (-psi * time / di.getTau()));
+                    debug("t1Third: " + t1Third);
+                    Double sinFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1));
+                    debug("sinFirst: " + sinFirst);
+
+                    result = t1First * t1Second * t1Third * sinFirst;
+
+                }
+                return result;
+            }
+        };
+
         for (DataInput di : input_catalog) {
             if (maxTau < di.getTau()) {
                 maxTau = di.getTau();
             }
         }
+        for (Double psi : psiList) {
+            for (DataInput di : input_catalog) {
+                double ultimoPico = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+                maxTime = (ultimoPico > maxTime ? ultimoPico : maxTime);//lo sobreescribo si es mayor
+            }
+        }
+        maxTime = maxTime * 1.5;//un 50% mas.
     }
 
     @Override
@@ -154,7 +207,7 @@ public class EntradaImpulso extends FuncionTransferencia {
                 );
         XYPlot plot = chart.getXYPlot();
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-        
+
         // set the color for each series
         for (XYSeries key : lineasMap.keySet()) {
             int idx = data.indexOf(key);
@@ -170,7 +223,7 @@ public class EntradaImpulso extends FuncionTransferencia {
             }
             colores.add((Color) paint);
         }
-        
+
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
@@ -207,12 +260,12 @@ public class EntradaImpulso extends FuncionTransferencia {
         }
         return reto;
     }
-    
+
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries("Amplitud");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
-        reto.add(0,0);
-        reto.add(numberTau,0);
+        reto.add(0, 0);
+        reto.add(numberTau, 0);
         return reto;
     }
 
@@ -238,8 +291,8 @@ public class EntradaImpulso extends FuncionTransferencia {
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Caida", "Tiempo Asentamiento"}, 0);
         //DataInput di = input_catalog.get(0);
-        for(DataInput di: input_catalog){
-             for (Double psi : psiList) {
+        for (DataInput di : input_catalog) {
+            for (Double psi : psiList) {
                 List<String> row = new ArrayList<String>();
                 row.add(di.getLabel() + " -- " + psi);//categoria
                 if (psi < 1) {
@@ -250,17 +303,16 @@ public class EntradaImpulso extends FuncionTransferencia {
                     row.add("-");
                     row.add("-");
                 }
-                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(getPorcentajeAlgebraico(di), psi, di.getTau())));
+                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di)));
                 tmodel.addRow(row.toArray(new String[0]));
             }
-        }              
+        }
         return tmodel;
     }
 
-    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
-        return -Math.log(porc / 100) / (psi * tau);
-    }
-
+//    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
+//        return -Math.log(porc / 100) / (psi * tau);
+//    }
     private Double getOvershoot(Double psi) {
         Double exp = -(Math.PI * psi) / (Math.sqrt(1 - Math.pow(psi, 2)));
         return Math.pow(Math.E, exp);
@@ -271,7 +323,47 @@ public class EntradaImpulso extends FuncionTransferencia {
         return Math.pow(overshoot, 2);
     }
 
-//    private Double getTiempoAsentamiento(DataInput di) {
-//        return DataInput.NCTE_TAU_TABLA * di.getTau();
-//    }
+    private Double getTiempoAsentamiento(Double porc, Double psi, DataInput di) {
+        double result = 0D;
+        boolean contenido = false;
+        double valSup = di.getAmplitud() * (porc / 100);
+        double valInf = -di.getAmplitud() * (porc / 100);
+        if (psi < 1) {
+            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+            for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+                //valor de Y(t)
+                double value = di.getAmplitud() * ((1 / (Math.sqrt(1 - Math.pow(psi, 2))) * di.getTau()) * Math.exp((-psi * time) / di.getTau()) * Math.sin((Math.sqrt(1 - Math.pow(psi, 2))) * (time / di.getTau())));
+
+                if (value > valInf && value < valSup) {
+                    if (!contenido) {
+                        result = time;
+                        contenido = true;
+                    }
+                } else {
+                    contenido = false;
+                }
+
+            }
+        } else {
+
+            for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+                //valor de Y(t)
+                double value = getfdet(di, time, psi);
+                if (value > valInf && value < valSup) {
+                    if (!contenido) {
+                        result = time;
+                        contenido = true;
+                    }
+                } else {
+                    contenido = false;
+                }
+
+            }
+        }
+        return result;
+    }
+
+    public static void main(String arg[]) {
+        pnlEntradaImpulso.main(arg);
+    }
 }
