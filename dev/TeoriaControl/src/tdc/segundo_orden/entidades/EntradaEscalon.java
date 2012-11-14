@@ -56,6 +56,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     //esto es para setear luego los colores que le pone el plotter, es re cabeza
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
     private CurvaUtil curvaUtil;
+
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
@@ -121,8 +122,6 @@ public class EntradaEscalon extends FuncionTransferencia {
             for (DataInput di : input_catalog) {
                 double ultimoPico = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
                 maxTime = (ultimoPico > maxTime ? ultimoPico : maxTime);//lo sobreescribo si es mayor
-//                double asentamiento = getTiempoAsentamiento(porcAsentamiento, psi, di);
-//                maxTime = (asentamiento > maxTime ? asentamiento : maxTime);//lo sobreescribo si es mayor
             }
         }
         maxTime = maxTime * 1.5;//un 50% mas.
