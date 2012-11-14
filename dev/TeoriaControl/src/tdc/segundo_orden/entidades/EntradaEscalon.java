@@ -36,6 +36,7 @@ import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
 import tdc.segundo_orden.gui.pnlEntradaEscalon;
+import tdc.util.CurvaUtil;
 
 /**
  *
@@ -54,7 +55,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
     //esto es para setear luego los colores que le pone el plotter, es re cabeza
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
-    
+    private CurvaUtil curvaUtil;
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
@@ -63,6 +64,54 @@ public class EntradaEscalon extends FuncionTransferencia {
     }
 
     private void init() {
+        curvaUtil = new CurvaUtil() {
+
+            @Override
+            public double getfdet(DataInput di, double time, Double psi) {
+                Double result = 0D;
+                //psi >0
+                if (psi < 0) {
+                    throw new IllegalArgumentException("invalid psi value: " + psi);
+                }
+                if (psi == 1) {
+                    Double t1First = 1 + time / di.getTau();
+                    debug("t1First: " + t1First);
+                    Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
+                    debug("t1Second: " + t1Second);
+
+                    result = 1 - t1First * t1Second;
+
+                } else if (psi < 1) {
+                    Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)));
+                    Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
+                    Double secondTerm1 = t1First * t1Second;
+                    debug("secondTerm1: " + secondTerm1);
+
+                    Double sinFirst = Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau();
+                    Double sinSecond = Math.atan(Math.sqrt(1 - Math.pow(psi, 2)) / psi);
+                    Double secondTerm2 = Math.sin(sinFirst + sinSecond);
+                    debug("secondTerm2: " + secondTerm2);
+
+                    result = 1 - secondTerm1 * secondTerm2;
+                } else { //psi > 1 :P
+                    Double t1First = Math.pow(Math.E, ((-psi * time) / di.getTau()));
+                    debug("t1First: " + t1First);
+                    Double coshFirst = Math.cosh(Math.sqrt(Math.pow(psi, 2) - 1) * (time / di.getTau()));
+                    debug("coshFirst: " + coshFirst);
+                    Double t1Second = psi / (Math.sqrt(Math.pow(psi, 2) - 1));
+                    debug("t1Second: " + t1Second);
+                    Double sinhFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1) * (time / di.getTau()));
+                    debug("sinhFirst: " + sinhFirst);
+                    debug("generado??: " + (t1First * (coshFirst + t1Second * sinhFirst)));
+                    result = 1 - t1First * (coshFirst + t1Second * sinhFirst);
+                }
+
+                debug("Y(" + time + ") generado: " + (di.getAmplitud() * result));
+                debug("-----------------");
+                return di.getAmplitud() * result;
+            }
+        };
+
         for (DataInput di : input_catalog) {
             if (maxTau < di.getTau()) {
                 maxTau = di.getTau();
@@ -70,11 +119,13 @@ public class EntradaEscalon extends FuncionTransferencia {
         }
         for (Double psi : psiList) {
             for (DataInput di : input_catalog) {
-                double asentamiento = getTiempoAsentamiento(porcAsentamiento, psi, di);
-                maxTime = (asentamiento>maxTime?asentamiento:maxTime);//lo sobreescribo si es mayor
+                double ultimoPico = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+                maxTime = (ultimoPico > maxTime ? ultimoPico : maxTime);//lo sobreescribo si es mayor
+//                double asentamiento = getTiempoAsentamiento(porcAsentamiento, psi, di);
+//                maxTime = (asentamiento > maxTime ? asentamiento : maxTime);//lo sobreescribo si es mayor
             }
         }
-        maxTime=maxTime*1.5;//un 50% mas.
+        maxTime = maxTime * 1.5;//un 50% mas.
     }
 
     @Override
@@ -188,7 +239,6 @@ public class EntradaEscalon extends FuncionTransferencia {
         return reto;
     }
 
-    
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries("Amplitud");
         Number numberTau = maxTime;
@@ -290,32 +340,33 @@ public class EntradaEscalon extends FuncionTransferencia {
         double valSup = di.getAmplitud() * (1 + porc / 100);
         double valInf = di.getAmplitud() * (1 - porc / 100);
         if (psi < 1) {
-            for (double time = 0; time <  NCTE_TAU_GRAFICA * maxTau ; time = time + DataInput.JUMP) {
+            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+            for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
                 //valor de Y(t)
                 double value = di.getAmplitud() * (1 - ((1 / (Math.sqrt(1 - Math.pow(psi, 2)))) * (Math.exp((-psi * time) / di.getTau())) * (Math.sin(
-                    ((Math.sqrt(1 - Math.pow(psi, 2))) * (time / di.getTau())) + Math.atan((Math.sqrt(1 - Math.pow(psi, 2))) / psi)))));
+                        ((Math.sqrt(1 - Math.pow(psi, 2))) * (time / di.getTau())) + Math.atan((Math.sqrt(1 - Math.pow(psi, 2))) / psi)))));
                 if (value > valInf && value < valSup) {
-                    if(!contenido){
+                    if (!contenido) {
                         result = time;
-                        contenido=true;
+                        contenido = true;
                     }
-                }else{
-                    contenido=false;
+                } else {
+                    contenido = false;
                 }
 
             }
         } else {
-            
+
             for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
                 //valor de Y(t)
                 double value = getfdet(di, time, psi);
                 if (value > valInf && value < valSup) {
-                    if(!contenido){
+                    if (!contenido) {
                         result = time;
-                        contenido=true;
+                        contenido = true;
                     }
-                }else{
-                    contenido=false;
+                } else {
+                    contenido = false;
                 }
 
             }
@@ -354,8 +405,8 @@ public class EntradaEscalon extends FuncionTransferencia {
     protected double getfdet(DataInput di, double time) {
         throw new UnsupportedOperationException("Not supported yet.");
     }
-    
-    public static void main(String args[]){
+
+    public static void main(String args[]) {
         FuncionTransferencia.DEBUG = true;
         pnlEntradaEscalon.main(args);
     }

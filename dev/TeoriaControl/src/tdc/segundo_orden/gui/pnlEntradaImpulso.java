@@ -142,7 +142,7 @@ public class pnlEntradaImpulso extends JPanel {
 
     public static void main(String args[]) {
         JFrame frmMain = new JFrame("TeoriaDeControl " + Configuracion.getVersion());
-        frmMain.getContentPane().add(new pnlEntradaEscalon());
+        frmMain.getContentPane().add(new pnlEntradaImpulso());
         frmMain.setLocationRelativeTo(null);
         frmMain.pack();
         frmMain.setExtendedState(JFrame.MAXIMIZED_BOTH);
