@@ -4,8 +4,10 @@
  */
 package tdc.segundo_orden.entidades;
 
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Paint;
+import java.awt.Stroke;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -14,6 +16,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.axis.NumberTickUnit;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.chart.plot.XYPlot;
 import org.jfree.chart.renderer.AbstractRenderer;
@@ -40,6 +43,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     private java.util.List<Double> psiList = new ArrayList<Double>();
     private Double porcAsentamiento = 0D;
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
+    private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
 
     public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
@@ -67,6 +71,23 @@ public class EntradaImpulso extends FuncionTransferencia {
                 seriesSinColor.add(xys);
             }
         }
+        // el parametro de amplitud con otro tipo de stroke (:
+        Stroke dashedStroke = new BasicStroke(
+                1.0f, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND,
+                1.0f, new float[]{6.0f, 6.0f}, 0.0f);
+        Linea linea = new Linea(Color.black, dashedStroke);
+
+        XYSeries serie = getAmplitud(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
+
+        serie = getBandaSuperior(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
+
+        serie = getBandaInferior(input_catalog.get(0));
+        data.addSeries(serie);
+        lineasMap.put(serie, linea);
     }
 
     @Override
@@ -132,9 +153,12 @@ public class EntradaImpulso extends FuncionTransferencia {
                 );
         XYPlot plot = chart.getXYPlot();
         XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+        
         // set the color for each series
-        for (int i = 0; i < colores.size(); i++) {
-            renderer.setSeriesPaint(i, colores.get(i));
+        for (XYSeries key : lineasMap.keySet()) {
+            int idx = data.indexOf(key);
+            renderer.setSeriesPaint(idx, lineasMap.get(key).getColor());
+            renderer.setSeriesStroke(idx, lineasMap.get(key).getStroke());
         }
         plot.setRenderer(renderer);
         for (XYSeries key : seriesSinColor) {
@@ -145,11 +169,17 @@ public class EntradaImpulso extends FuncionTransferencia {
             }
             colores.add((Color) paint);
         }
+        
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
         timeAxis.setInverted(false);
-        timeAxis.setRange(0.0, NCTE_TAU_GRAFICA * maxTau);
-        plot.setDomainAxis(timeAxis);
+        timeAxis.setRange(0.0, 5 * maxTau);
+        timeAxis.setTickUnit(new NumberTickUnit(1));
+
+        final NumberAxis functionAxis = new NumberAxis("y(t)");
+        functionAxis.setInverted(false);
+        functionAxis.setTickUnit(new NumberTickUnit(1));
+        plot.setRangeAxis(functionAxis);
 
 
 
@@ -174,6 +204,32 @@ public class EntradaImpulso extends FuncionTransferencia {
             debug("Y(" + time + ") generado: " + value);
             reto.add(time, value);
         }
+        return reto;
+    }
+    
+    private XYSeries getAmplitud(DataInput di) {
+        XYSeries reto = new XYSeries("Amplitud");
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, di.getAmplitud());
+        reto.add(numberTau, di.getAmplitud());
+        return reto;
+    }
+
+    private XYSeries getBandaSuperior(DataInput di) {
+        Double banda = di.getAmplitud() * (0 + porcAsentamiento / 100);
+        XYSeries reto = new XYSeries("Banda superior");
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, banda);
+        reto.add(numberTau, banda);
+        return reto;
+    }
+
+    private XYSeries getBandaInferior(DataInput di) {
+        Double banda = di.getAmplitud() * (0 - porcAsentamiento / 100);
+        XYSeries reto = new XYSeries("Banda inferior");
+        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        reto.add(0, banda);
+        reto.add(numberTau, banda);
         return reto;
     }
 
