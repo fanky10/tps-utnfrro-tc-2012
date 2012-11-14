@@ -35,6 +35,7 @@ import tdc.entidades.FuncionTransferencia;
 import tdc.entidades.Linea;
 import tdc.gui.entidades.MyColorCellRenderer;
 import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
+import tdc.segundo_orden.gui.pnlEntradaEscalon;
 
 /**
  *
@@ -47,6 +48,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private static final double NCTE_TAU_GRAFICA = 20D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
+    private Double maxTime = 0D;
     private List<Double> psiList = new ArrayList<Double>();
     private Double porcAsentamiento = 0D;
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
@@ -66,6 +68,13 @@ public class EntradaEscalon extends FuncionTransferencia {
                 maxTau = di.getTau();
             }
         }
+        for (Double psi : psiList) {
+            for (DataInput di : input_catalog) {
+                double asentamiento = getTiempoAsentamiento(porcAsentamiento, psi, di);
+                maxTime = (asentamiento>maxTime?asentamiento:maxTime);//lo sobreescribo si es mayor
+            }
+        }
+        maxTime=maxTime*1.5;//un 50% mas.
     }
 
     @Override
@@ -171,7 +180,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         XYSeries reto = new XYSeries(di.getLabel() + " -- " + psi);
         debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
         debug("psi: " + psi);
-        for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time, psi);
             reto.add(time, value);
@@ -182,7 +191,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries("Amplitud");
-        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        Number numberTau = maxTime;
         reto.add(0, di.getAmplitud());
         reto.add(numberTau, di.getAmplitud());
         return reto;
@@ -191,7 +200,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private XYSeries getBandaSuperior(DataInput di) {
         Double banda = di.getAmplitud() * (1 + porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda superior");
-        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        Number numberTau = maxTime;
         reto.add(0, banda);
         reto.add(numberTau, banda);
         return reto;
@@ -200,7 +209,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private XYSeries getBandaInferior(DataInput di) {
         Double banda = di.getAmplitud() * (1 - porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda inferior");
-        Number numberTau = NCTE_TAU_GRAFICA * maxTau;
+        Number numberTau = maxTime;
         reto.add(0, banda);
         reto.add(numberTau, banda);
         return reto;
@@ -277,10 +286,9 @@ public class EntradaEscalon extends FuncionTransferencia {
 
     private Double getTiempoAsentamiento(Double porc, Double psi, DataInput di) {
         double result = 0D;
-        double tiempoAsentamientoGrafica = -1;
         boolean contenido = false;
-        double valSup = di.getAmplitud() * (1 + porcAsentamiento / 100);
-        double valInf = di.getAmplitud() * (1 - porcAsentamiento / 100);
+        double valSup = di.getAmplitud() * (1 + porc / 100);
+        double valInf = di.getAmplitud() * (1 - porc / 100);
         if (psi < 1) {
             for (double time = 0; time <  NCTE_TAU_GRAFICA * maxTau ; time = time + DataInput.JUMP) {
                 //valor de Y(t)
@@ -301,10 +309,6 @@ public class EntradaEscalon extends FuncionTransferencia {
             for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
                 //valor de Y(t)
                 double value = getfdet(di, time, psi);
-//                if (tiempoAsentamientoGrafica < 0 && value > valInf && value < valSup) {
-//                    result = time;
-//                    break;
-//                }
                 if (value > valInf && value < valSup) {
                     if(!contenido){
                         result = time;
@@ -349,5 +353,10 @@ public class EntradaEscalon extends FuncionTransferencia {
     @Override
     protected double getfdet(DataInput di, double time) {
         throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    public static void main(String args[]){
+        FuncionTransferencia.DEBUG = true;
+        pnlEntradaEscalon.main(args);
     }
 }
