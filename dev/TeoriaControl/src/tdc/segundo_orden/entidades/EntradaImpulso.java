@@ -44,6 +44,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     private Double porcAsentamiento = 0D;
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
+    private Double tiempoAsentamiento = -1D;//not set
 
     public EntradaImpulso(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
@@ -210,8 +211,8 @@ public class EntradaImpulso extends FuncionTransferencia {
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries("Amplitud");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
-        reto.add(0, di.getAmplitud());
-        reto.add(numberTau, di.getAmplitud());
+        reto.add(0,0);
+        reto.add(numberTau,0);
         return reto;
     }
 
@@ -235,7 +236,7 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     @Override
     public DefaultTableModel createTableModel() {
-        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Subida", "Tiempo Caida"}, 0);
+        DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Caida", "Tiempo Asentamiento"}, 0);
         //DataInput di = input_catalog.get(0);
         for(DataInput di: input_catalog){
              for (Double psi : psiList) {
@@ -249,7 +250,7 @@ public class EntradaImpulso extends FuncionTransferencia {
                     row.add("-");
                     row.add("-");
                 }
-                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di.getTau())));
+                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(getPorcentajeAlgebraico(di), psi, di.getTau())));
                 tmodel.addRow(row.toArray(new String[0]));
             }
         }              
