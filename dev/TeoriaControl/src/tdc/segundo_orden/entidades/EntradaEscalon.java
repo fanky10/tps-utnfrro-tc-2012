@@ -44,7 +44,7 @@ import tdc.segundo_orden.gui.EntradaEscalonImpulsoOrdenDosForm;
  */
 public class EntradaEscalon extends FuncionTransferencia {
 
-    private static final double NCTE_TAU_GRAFICA = 10D;
+    private static final double NCTE_TAU_GRAFICA = 20D;
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Escalón";
     private Double maxTau = 0D;
     private List<Double> psiList = new ArrayList<Double>();
@@ -52,7 +52,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
     //esto es para setear luego los colores que le pone el plotter, es re cabeza
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
-    private Double tiempoAsentamiento = -1D;//not set
+    
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
@@ -174,22 +174,12 @@ public class EntradaEscalon extends FuncionTransferencia {
         for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time, psi);
-            generaTiempoAsentamiento(value,time);
             reto.add(time, value);
         }
         return reto;
     }
-    /**
-     * si el valor de t se acerca al porcentaje asentamiento, entonces el tiempo es nuestro tiempo asentamiento (=
-     * @param value
-     * @param time 
-     */
-    private void generaTiempoAsentamiento(Double value,Double time){
-        if(tiempoAsentamiento<0 && value>(1-porcAsentamiento/100)){
-            tiempoAsentamiento = time;
-        }
-    }
 
+    
     private XYSeries getAmplitud(DataInput di) {
         XYSeries reto = new XYSeries("Amplitud");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
@@ -245,7 +235,7 @@ public class EntradaEscalon extends FuncionTransferencia {
             if (paint == null) {
                 paint = ((AbstractRenderer) renderer).lookupSeriesPaint(seriesIndex);
             }
-            colores.add((Color)paint);
+            colores.add((Color) paint);
         }
         //percentage (rangeAxis)
         final NumberAxis timeAxis = new NumberAxis("tiempo");
@@ -265,8 +255,8 @@ public class EntradaEscalon extends FuncionTransferencia {
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel(new String[]{"Categoria", "Overshoot", "Tiempo Caida", "Tiempo Asentamiento"}, 0);
         //DataInput di = input_catalog.get(0);
-        for(DataInput di: input_catalog){
-             for (Double psi : psiList) {
+        for (DataInput di : input_catalog) {
+            for (Double psi : psiList) {
                 List<String> row = new ArrayList<String>();
                 row.add(di.getLabel() + " -- " + psi);//categoria
                 if (psi < 1) {
@@ -277,16 +267,57 @@ public class EntradaEscalon extends FuncionTransferencia {
                     row.add("-");
                     row.add("-");
                 }
-                row.add(Utilidades.DECIMAL_FORMATTER.format(tiempoAsentamiento));
+                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di)));
                 tmodel.addRow(row.toArray(new String[0]));
             }
-        }              
-         return tmodel;
+        }
+        return tmodel;
     }
     //en vez de calcularlo se saca de grafica
-//    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
-//        return -Math.log(porc / 100) / (psi * tau);
-//    }
+
+    private Double getTiempoAsentamiento(Double porc, Double psi, DataInput di) {
+        double result = 0D;
+        double tiempoAsentamientoGrafica = -1;
+        boolean contenido = false;
+        double valSup = di.getAmplitud() * (1 + porcAsentamiento / 100);
+        double valInf = di.getAmplitud() * (1 - porcAsentamiento / 100);
+        if (psi < 1) {
+            for (double time = 0; time <  NCTE_TAU_GRAFICA * maxTau ; time = time + DataInput.JUMP) {
+                //valor de Y(t)
+                double value = di.getAmplitud() * (1 - ((1 / (Math.sqrt(1 - Math.pow(psi, 2)))) * (Math.exp((-psi * time) / di.getTau())) * (Math.sin(
+                    ((Math.sqrt(1 - Math.pow(psi, 2))) * (time / di.getTau())) + Math.atan((Math.sqrt(1 - Math.pow(psi, 2))) / psi)))));
+                if (value > valInf && value < valSup) {
+                    if(!contenido){
+                        result = time;
+                        contenido=true;
+                    }
+                }else{
+                    contenido=false;
+                }
+
+            }
+        } else {
+            
+            for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
+                //valor de Y(t)
+                double value = getfdet(di, time, psi);
+//                if (tiempoAsentamientoGrafica < 0 && value > valInf && value < valSup) {
+//                    result = time;
+//                    break;
+//                }
+                if (value > valInf && value < valSup) {
+                    if(!contenido){
+                        result = time;
+                        contenido=true;
+                    }
+                }else{
+                    contenido=false;
+                }
+
+            }
+        }
+        return result;
+    }
 
     private Double getOvershoot(Double psi) {
         Double exp = -(Math.PI * psi) / (Math.sqrt(1 - Math.pow(psi, 2)));
