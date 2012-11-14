@@ -52,7 +52,7 @@ public class EntradaEscalon extends FuncionTransferencia {
     private Map<XYSeries, Linea> lineasMap = new LinkedHashMap<XYSeries, Linea>();
     //esto es para setear luego los colores que le pone el plotter, es re cabeza
     private List<XYSeries> seriesSinColor = new ArrayList<XYSeries>();
-
+    private Double tiempoAsentamiento = -1D;//not set
     public EntradaEscalon(EntradaEscalonImpulsoOrdenDosForm input) {
         super(input);
         this.psiList = input.getPsi();
@@ -174,9 +174,20 @@ public class EntradaEscalon extends FuncionTransferencia {
         for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
             //valor de Y(t)
             double value = getfdet(di, time, psi);
+            generaTiempoAsentamiento(value,time);
             reto.add(time, value);
         }
         return reto;
+    }
+    /**
+     * si el valor de t se acerca al porcentaje asentamiento, entonces el tiempo es nuestro tiempo asentamiento (=
+     * @param value
+     * @param time 
+     */
+    private void generaTiempoAsentamiento(Double value,Double time){
+        if(tiempoAsentamiento<0 && value>(1-porcAsentamiento/100)){
+            tiempoAsentamiento = time;
+        }
     }
 
     private XYSeries getAmplitud(DataInput di) {
@@ -266,20 +277,16 @@ public class EntradaEscalon extends FuncionTransferencia {
                     row.add("-");
                     row.add("-");
                 }
-                row.add(Utilidades.DECIMAL_FORMATTER.format(getTiempoAsentamiento(porcAsentamiento, psi, di.getTau())));
+                row.add(Utilidades.DECIMAL_FORMATTER.format(tiempoAsentamiento));
                 tmodel.addRow(row.toArray(new String[0]));
             }
         }              
          return tmodel;
     }
-    
-    
-        
- 
-
-    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
-        return -Math.log(porc / 100) / (psi * tau);
-    }
+    //en vez de calcularlo se saca de grafica
+//    private Double getTiempoAsentamiento(Double porc, Double psi, Double tau) {
+//        return -Math.log(porc / 100) / (psi * tau);
+//    }
 
     private Double getOvershoot(Double psi) {
         Double exp = -(Math.PI * psi) / (Math.sqrt(1 - Math.pow(psi, 2)));
