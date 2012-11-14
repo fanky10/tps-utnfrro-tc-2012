@@ -11,7 +11,9 @@
 package tdc.segundo_orden.gui;
 
 import java.awt.BorderLayout;
+import javax.swing.JFrame;
 import javax.swing.JPanel;
+import tdc.Configuracion;
 import tdc.entidades.DataInputCatalog;
 import tdc.gui.entidades.CustomChartPanel;
 import tdc.gui.entidades.DefaultChartModel;
@@ -58,6 +60,15 @@ public class pnlEntradaSenoidal extends JPanel {
     @Override
     public String toString() {
         return "Entrada Senoidal";
+    }
+    public static void main(String args[]){
+        JFrame frmMain = new JFrame("TeoriaDeControl " + Configuracion.getVersion());
+        frmMain.getContentPane().add(new pnlEntradaSenoidal());
+        frmMain.setLocationRelativeTo(null);
+        frmMain.pack();
+        frmMain.setExtendedState(JFrame.MAXIMIZED_BOTH);
+        frmMain.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frmMain.setVisible(true);
     }
 
     /** This method is called from within the constructor to

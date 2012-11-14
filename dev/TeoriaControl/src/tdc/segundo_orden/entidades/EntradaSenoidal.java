@@ -26,6 +26,7 @@ import org.jfree.data.xy.XYSeries;
 import tdc.entidades.DataInput;
 import tdc.entidades.FuncionTransferencia;
 import tdc.segundo_orden.gui.EntradaSenoidalOrdenDosForm;
+import tdc.segundo_orden.gui.pnlEntradaSenoidal;
 
 /**
  *
@@ -38,6 +39,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Senoidal";
     private double maxTime = 0D;
     private double psi = 0D;
+
     public EntradaSenoidal(EntradaSenoidalOrdenDosForm input) {
         super(input);
         psi = input.getPsi();
@@ -47,8 +49,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
     private void init() {
 
         for (DataInput di : input_catalog) {
-            if (maxTime < di.getPeriodo() * 4) {
-                maxTime = di.getPeriodo() * 4;
+            if (maxTime < di.getPeriodo() * DataInput.NCTE_TAU_GRAFICA) {
+                maxTime = di.getPeriodo() * DataInput.NCTE_TAU_GRAFICA;
             }
         }
     }
@@ -59,10 +61,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
         for (DataInput di : input_catalog) {
             showVars(di);
             data.addSeries(getEntrada(di));
-            data.addSeries(getRespuestaSS(di));
-            data.addSeries(getRespuestaTotal(di));
+            data.addSeries(getRespuesta(di));
             data.addSeries(getValorBase(di));
-            //data.addSeries(getValorMax(di));
         }
 
     }
@@ -81,23 +81,12 @@ public class EntradaSenoidal extends FuncionTransferencia {
         return reto;
     }
 
-    private XYSeries getRespuestaTotal(DataInput di) {
+    private XYSeries getRespuesta(DataInput di) {
         XYSeries reto = new XYSeries("Respuesta Total");
         DataInput.JUMP = 0.01D;
         //opc 2
         for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
-            double value = getfdet(di, time, true);
-            reto.add(time, value);
-        }
-        return reto;
-    }
-
-    private XYSeries getRespuestaSS(DataInput di) {
-        XYSeries reto = new XYSeries("Respuesta SS");
-        DataInput.JUMP = 0.01D;
-        //opc 2
-        for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
-            double value = getfdet(di, time, false);
+            double value = getfdet(di, time);
             reto.add(time, value);
         }
         return reto;
@@ -165,37 +154,38 @@ public class EntradaSenoidal extends FuncionTransferencia {
     @Override
     public DefaultTableModel createTableModel() {
         DefaultTableModel tmodel = new DefaultTableModel();
-        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad" });
+        tmodel.setColumnIdentifiers(new Object[]{"Cta de Tiempo", "Ret Fase Grados", "Ret Fase Min", "Ret Fase Rad"});
         double tau = 0.01D;
         for (DataInput di : input_catalog) {
             for (double i = 0.01; i <= 1000; i = i * 10) {
                 debug("tau: " + tau + "iterator: " + i);
-                tmodel.addRow(new Object[]{i, 
-                    (double)Math.round(di.getPhaseLag(i) * 100) / 100, 
-                    convertToMin((double)Math.round(di.getPhaseLag(i) * 100) / 100),
-                    convertToRad((double)Math.round(di.getPhaseLag(i) * 100) / 100)});
+                tmodel.addRow(new Object[]{i,
+                            (double) Math.round(di.getPhaseLag(i) * 100) / 100,
+                            convertToMin((double) Math.round(di.getPhaseLag(i) * 100) / 100),
+                            convertToRad((double) Math.round(di.getPhaseLag(i) * 100) / 100)});
             }
         }
-        tmodel.addRow(new Object[]{"∞","-90"});
+        tmodel.addRow(new Object[]{"∞", "-90"});
         return tmodel;
     }
 
     @Override
     protected double getfdet(DataInput di, double time) {
-        return getfdet(di, time, true);
+        double sqrtOne = Math.pow((1 - Math.pow(di.getOmega() * di.getTau(), 2)), 2);
+        double sqrtTwo = Math.pow(2 * psi * di.getOmega() * di.getTau(), 2);
+        double sin = Math.sin(di.getOmega() * time + getPhaseLag(di));
+        double sqrt = Math.sqrt(sqrtOne + sqrtTwo);
+        double result = 1 / sqrt * sin;
+        debug("sin: " + sin);
+        debug("sqrt: " + sqrt);
+        debug("result: " + result);
+        return di.getAmplitud() * result + di.getValor_base();
     }
 
-    protected double getfdet(DataInput di, double time, boolean rtaTotal) {
-        double sqrtOne = Math.pow((1-Math.pow(di.getOmega()*di.getTau(), 2)),2);
-        double sqrtTwo = Math.pow(2*psi*di.getOmega()*di.getTau(), 2);
-        double result = 1 / Math.sqrt(sqrtOne+sqrtTwo) * Math.sin(di.getOmega()*di.getTau() + getPhaseLag(di));
-        return di.getAmplitud() * result;
-
-    }
-    private double getPhaseLag(DataInput di){
-        double nomin = 2*psi*di.getOmega()*di.getTau();
-        double denomin = 1 - Math.pow(di.getOmega()*di.getTau(), 2);
-        return -Math.atan(nomin/denomin);
+    private double getPhaseLag(DataInput di) {
+        double nomin = 2 * psi * di.getOmega() * di.getTau();
+        double denomin = 1 - Math.pow(di.getOmega() * di.getTau(), 2);
+        return -Math.atan(nomin / denomin);
     }
 
     private void showVars(DataInput di) {
@@ -216,33 +206,15 @@ public class EntradaSenoidal extends FuncionTransferencia {
 
     private Object convertToMin(double d) {
         double decNum = (d * Math.PI) / 3600;
-        decNum = (double)Math.round(decNum * 100) / 100;
-        return decNum;  
+        decNum = (double) Math.round(decNum * 100) / 100;
+        return decNum;
     }
 
     private Object convertToRad(double d) {
         double rad = d * (Math.PI / 180);
-        rad = (double)Math.round(rad * 100) / 100;
+        rad = (double) Math.round(rad * 100) / 100;
         return rad;
     }
-    
-//    private String getMinAndSec(double decNum) {
-//        String minAndSec="";
-//        double minutes = decNum * 60;
-//        int min = (int)minutes;
-//        double seconds = minutes - min;
-//        seconds = (double)Math.round((seconds * 60) * 100) / 100;;
-//        minAndSec = min + "' " + seconds + "''" ;
-//        return minAndSec;
-//    }
-    
-//    private XYSeries getValorMax(DataInput di) {
-//        XYSeries reto = new XYSeries("Valor Maximo");
-//        reto.add(0, di.getValor_max());
-//        reto.add(maxTime, di.getValor_max());
-//
-//        return reto;
-//    }
 
     //otra forma mas elaborada...
     /** 
@@ -296,5 +268,9 @@ public class EntradaSenoidal extends FuncionTransferencia {
         public Paint getNextFillPaint() {
             return getNextPaint();
         }
+    }
+
+    public static void main(String args[]) {
+        pnlEntradaSenoidal.main(args);
     }
 }

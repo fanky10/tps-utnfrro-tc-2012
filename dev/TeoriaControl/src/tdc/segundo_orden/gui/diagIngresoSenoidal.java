@@ -12,10 +12,8 @@
 package tdc.segundo_orden.gui;
 
 import java.awt.Color;
-import java.util.Collections;
 import tdc.Utilidades;
 import tdc.entidades.DataInput;
-import tdc.entidades.DataInputCatalog;
 
 /**
  *
@@ -35,6 +33,7 @@ public class diagIngresoSenoidal extends javax.swing.JDialog {
         Utilidades.setDouble(txtAmplitud, 5);
         Utilidades.setDouble(txtFrecuencia,1);//3.18);
         Utilidades.setDouble(txtCteTiempo,2);
+        Utilidades.setDouble(txtPsi,0.2D);
         
     }
     public EntradaSenoidalOrdenDosForm getDatosIngresados(){
