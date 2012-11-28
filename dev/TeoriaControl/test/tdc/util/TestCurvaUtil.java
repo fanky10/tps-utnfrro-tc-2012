@@ -13,7 +13,7 @@ import tdc.entidades.DataInput;
  */
 public class TestCurvaUtil {
 
-    public void test() {
+    public void testEscalon() {
         double psi = 0.2D;
         double amplitud = 1;
         double tau = 1;
@@ -66,6 +66,17 @@ public class TestCurvaUtil {
                 debug("-----------------");
                 return di.getAmplitud() * result;
             }
+
+            @Override
+            public double getBandaSuperior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (1 + porcAsentamiento / 100);
+        
+            }
+
+            @Override
+            public double getBandaInferior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (1 - porcAsentamiento / 100);
+            }
         };
 //        debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
 //        debug("psi: " + psi);
@@ -80,9 +91,80 @@ public class TestCurvaUtil {
 
     public static void main(String args[]) {
         TestCurvaUtil test = new TestCurvaUtil();
-        test.test();
+//        test.testEscalon();
+        test.testImpulso();
     }
+    
+    public void testImpulso() {
+        double psi = 0.2D;
+        double amplitud = 1;
+        double tau = 1;
+        double maxTime = 30*tau;
+        DataInput di = new DataInput("Datos1", amplitud, tau, Color.red);
+        
+        CurvaUtil cu = new CurvaUtil() {
 
+            @Override
+            public double getfdet(DataInput di, double time, Double psi) {
+                Double result = 0D;
+                if (psi < 1) {
+                    Double t1First = 1 / (Math.sqrt(1 - Math.pow(psi, 2)) * di.getTau());
+                    debug("t1First: " + t1First);
+                    Double t1Second = Math.pow(Math.E, ((-psi * time) / di.getTau()));
+                    debug("t1Second: " + t1Second);
+                    Double secondTerm1 = t1First * t1Second;
+                    debug("secondTerm1: " + secondTerm1);
+                    Double sinFirst = Math.sin(Math.sqrt(1 - Math.pow(psi, 2)) * time / di.getTau());
+                    debug("sinFirst: " + sinFirst);
+
+                    result = t1First * t1Second * sinFirst;
+
+                } else if (psi == 1) {
+                    Double t1First = (1 / Math.pow(di.getTau(), 2)) * time;
+                    debug("t1First: " + t1First);
+                    Double t1Second = Math.pow(Math.E, (-time / di.getTau()));
+                    debug("t1Sdecond: " + t1Second);
+
+                    result = t1First * t1Second;
+
+                } else {
+                    Double t1First = time / Math.pow(di.getTau(), 2);
+                    debug("t1First: " + t1First);
+                    Double t1Second = 1 / Math.sqrt(Math.pow(psi, 2) - 1);
+                    debug("t1Second: " + t1Second);
+                    Double t1Third = Math.pow(Math.E, (-psi * time / di.getTau()));
+                    debug("t1Third: " + t1Third);
+                    Double sinFirst = Math.sinh(Math.sqrt(Math.pow(psi, 2) - 1));
+                    debug("sinFirst: " + sinFirst);
+
+                    result = t1First * t1Second * t1Third * sinFirst;
+
+                }
+                return di.getAmplitud() * result;
+            }
+
+            @Override
+            public double getBandaSuperior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (porcAsentamiento / 100);
+
+            }
+
+            @Override
+            public double getBandaInferior(DataInput di, Double porcAsentamiento) {
+                return -di.getAmplitud() * (porcAsentamiento / 100);
+            }
+        };
+
+//        debug("generating Graphic tau: " + di.getTau() + " amplitud: " + di.getAmplitud());
+//        debug("psi: " + psi);
+//        double tiempoUltimoPeak = cu.getGraphPeak(di, psi, maxTime);
+//        debug("ultimo pico: " + tiempoUltimoPeak);
+//        cu.showPicosSuperiores(di, psi, maxTime);
+//        cu.showPicosInferiores(di, psi, maxTime);
+//        cu.showAllPicos(di, psi, maxTime);
+//        cu.showAllPicosInBetween(di, psi, maxTime, 5D);
+        debug("primerPico en banda: "+cu.getPrimerPicoBetween(di, psi, maxTime, 5D));
+    }
     public static void debug(String txt) {
         if (true) {
             System.out.println("DEBUG: " + txt);
