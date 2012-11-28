@@ -39,6 +39,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
     public static String CHART_TITLE = "Respuesta Transiente Sistema Segundo orden: Entrada tipo Senoidal";
     private double maxTime = 0D;
     private double psi = 0D;
+    private double maxValorAmplitud = 0D;
+    private double minValorAmplitud = Double.MAX_VALUE;
 
     public EntradaSenoidal(EntradaSenoidalOrdenDosForm input) {
         super(input);
@@ -76,6 +78,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
         for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             //s/me
             double value = di.getAmplitud() * Math.sin(di.getOmega() * time) + di.getValor_base();
+            setMaxValorAmplitud(value);
+            setMinValorAmplitud(value);
             reto.add(time, value);
         }
         return reto;
@@ -87,6 +91,8 @@ public class EntradaSenoidal extends FuncionTransferencia {
         //opc 2
         for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             double value = getfdet(di, time);
+            setMaxValorAmplitud(value);
+            setMinValorAmplitud(value);
             reto.add(time, value);
         }
         return reto;
@@ -126,20 +132,22 @@ public class EntradaSenoidal extends FuncionTransferencia {
     private void conf_range_plot(XYPlot plot) {
 
         double maxBaseValue = 0;
-        double maxAmplitud = 0;
         for (DataInput di : input_catalog) {
             if (maxBaseValue < di.getValor_base()) {
                 maxBaseValue = di.getValor_base();
             }
-            if (maxAmplitud < di.getAmplitud()) {
-                maxAmplitud = di.getAmplitud();//+2 (?)
-            }
         }
-        double changui = maxAmplitud * 0.05;
+        double porc = 0.01;
+        double bandaSuperior = getMaxValorAmplitud() * (1 + porc);
+        double bandaInferior = getMinValorAmplitud() * (1 - porc);
+        
+        debug("bandaSup: " + bandaSuperior);
+        debug("bandaInf: " + bandaInferior);
+
         final NumberAxis functionAxis = new NumberAxis("y(t)");
         functionAxis.setInverted(false);
         //2veces la diferencia entre max_base y el mas alto de los peaks
-        functionAxis.setRange(maxBaseValue - maxAmplitud - changui, maxBaseValue + maxAmplitud + changui);
+        functionAxis.setRange(bandaInferior, bandaSuperior);
         plot.setRangeAxis(functionAxis);
 
     }
@@ -192,7 +200,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
         debug("CteTiempo: " + di.getTau());
         debug("Amplitud: " + di.getAmplitud());
         debug("Valor Base: " + di.getValor_base());
-        //debug("Valor Maximo: " + di.getValor_max());
+//        debug("Valor Maximo: " + di.getValor_max());
         debug("Frecuencia: " + di.getFrecuencia());
         debug("Omega: " + di.getOmega());
         debug("Period: " + di.getPeriodo());
@@ -214,6 +222,26 @@ public class EntradaSenoidal extends FuncionTransferencia {
         double rad = d * (Math.PI / 180);
         rad = (double) Math.round(rad * 100) / 100;
         return rad;
+    }
+
+    public void setMaxValorAmplitud(double maxValorAmplitud) {
+        if (this.maxValorAmplitud < maxValorAmplitud) {
+            this.maxValorAmplitud = maxValorAmplitud;
+        }
+    }
+
+    public double getMaxValorAmplitud() {
+        return maxValorAmplitud;
+    }
+
+    public double getMinValorAmplitud() {
+        return minValorAmplitud;
+    }
+
+    public void setMinValorAmplitud(double minValorAmplitud) {
+        if (this.minValorAmplitud > minValorAmplitud) {
+            this.minValorAmplitud = minValorAmplitud;
+        }
     }
 
     //otra forma mas elaborada...
@@ -271,6 +299,7 @@ public class EntradaSenoidal extends FuncionTransferencia {
     }
 
     public static void main(String args[]) {
+        FuncionTransferencia.DEBUG = true;
         pnlEntradaSenoidal.main(args);
     }
 }
