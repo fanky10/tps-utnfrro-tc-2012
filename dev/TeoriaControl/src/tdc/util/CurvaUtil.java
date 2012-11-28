@@ -13,13 +13,15 @@ import tdc.entidades.DataInput;
 public abstract class CurvaUtil {
 
     public abstract double getfdet(DataInput di, double time, Double psi);
+    public abstract double getBandaSuperior(DataInput di,Double porcAsentamiento);
+    public abstract double getBandaInferior(DataInput di,Double porcAsentamiento);
     
     public double getPrimerPicoBetween(DataInput di, double psi, Double maxTime, Double porcAsentamiento) {
         double beforeValue = 0;
         boolean estaBajando = false;
         boolean estaSubiendo = false;
-        Double bandaSup = di.getAmplitud() * (1 + porcAsentamiento / 100);
-        Double bandaInf = di.getAmplitud() * (1 - porcAsentamiento / 100);
+        Double bandaSup = getBandaSuperior(di, porcAsentamiento);
+        Double bandaInf = getBandaInferior(di, porcAsentamiento);
         Double result = 0D;
         for (double time = 0; time < maxTime; time = time + DataInput.JUMP) {
             //get function value

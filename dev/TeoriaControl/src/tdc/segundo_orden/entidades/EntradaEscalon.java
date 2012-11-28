@@ -111,6 +111,17 @@ public class EntradaEscalon extends FuncionTransferencia {
                 debug("-----------------");
                 return di.getAmplitud() * result;
             }
+
+            @Override
+            public double getBandaSuperior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (1 + porcAsentamiento / 100);
+        
+            }
+
+            @Override
+            public double getBandaInferior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (1 - porcAsentamiento / 100);
+            }
         };
 
         for (DataInput di : input_catalog) {
@@ -339,7 +350,7 @@ public class EntradaEscalon extends FuncionTransferencia {
         double valSup = di.getAmplitud() * (1 + porc / 100);
         double valInf = di.getAmplitud() * (1 - porc / 100);
         if (psi < 1) {
-            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+//            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
             for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
                 //valor de Y(t)
                 double value = di.getAmplitud() * (1 - ((1 / (Math.sqrt(1 - Math.pow(psi, 2)))) * (Math.exp((-psi * time) / di.getTau())) * (Math.sin(

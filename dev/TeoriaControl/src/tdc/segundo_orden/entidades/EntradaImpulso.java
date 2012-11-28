@@ -60,6 +60,7 @@ public class EntradaImpulso extends FuncionTransferencia {
 
     private void init() {
         curvaUtil = new CurvaUtil() {
+
             @Override
             public double getfdet(DataInput di, double time, Double psi) {
                 Double result = 0D;
@@ -96,7 +97,18 @@ public class EntradaImpulso extends FuncionTransferencia {
                     result = t1First * t1Second * t1Third * sinFirst;
 
                 }
-                return result;
+                return di.getAmplitud() * result;
+            }
+
+            @Override
+            public double getBandaSuperior(DataInput di, Double porcAsentamiento) {
+                return di.getAmplitud() * (porcAsentamiento / 100);
+
+            }
+
+            @Override
+            public double getBandaInferior(DataInput di, Double porcAsentamiento) {
+                return -di.getAmplitud() * (porcAsentamiento / 100);
             }
         };
 
@@ -111,6 +123,7 @@ public class EntradaImpulso extends FuncionTransferencia {
                 maxTime = (ultimoPico > maxTime ? ultimoPico : maxTime);//lo sobreescribo si es mayor
             }
         }
+        debug("maxTime: " + maxTime);
         maxTime = maxTime * 1.5;//un 50% mas.
     }
 
@@ -185,7 +198,7 @@ public class EntradaImpulso extends FuncionTransferencia {
             result = t1First * t1Second * t1Third * sinFirst;
 
         }
-        return result;
+        return di.getAmplitud() * result;
 
     }
 
@@ -270,7 +283,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getBandaSuperior(DataInput di) {
-        Double banda = di.getAmplitud() * (0 + porcAsentamiento / 100);
+        Double banda = di.getAmplitud() * (porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda superior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -279,7 +292,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     private XYSeries getBandaInferior(DataInput di) {
-        Double banda = di.getAmplitud() * (0 - porcAsentamiento / 100);
+        Double banda = -di.getAmplitud() * (porcAsentamiento / 100);
         XYSeries reto = new XYSeries("Banda inferior");
         Number numberTau = NCTE_TAU_GRAFICA * maxTau;
         reto.add(0, banda);
@@ -329,7 +342,7 @@ public class EntradaImpulso extends FuncionTransferencia {
         double valSup = di.getAmplitud() * (porc / 100);
         double valInf = -di.getAmplitud() * (porc / 100);
         if (psi < 1) {
-            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
+//            double maxTime = curvaUtil.getPrimerPicoBetween(di, psi, NCTE_TAU_GRAFICA * maxTau, porcAsentamiento);
             for (double time = 0; time < NCTE_TAU_GRAFICA * maxTau; time = time + DataInput.JUMP) {
                 //valor de Y(t)
                 double value = di.getAmplitud() * ((1 / (Math.sqrt(1 - Math.pow(psi, 2))) * di.getTau()) * Math.exp((-psi * time) / di.getTau()) * Math.sin((Math.sqrt(1 - Math.pow(psi, 2))) * (time / di.getTau())));
@@ -364,6 +377,7 @@ public class EntradaImpulso extends FuncionTransferencia {
     }
 
     public static void main(String arg[]) {
+        FuncionTransferencia.DEBUG = true;
         pnlEntradaImpulso.main(arg);
     }
 }
